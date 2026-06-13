@@ -1,14 +1,17 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  Activity,
   BookOpen,
   Brain,
   DoorOpen,
-  Gamepad2,
   Home,
+  GraduationCap,
   MessageCircleHeart,
   Palette,
+  School2,
   ScrollText,
   Swords,
+  Search,
   Users,
   Trophy,
   Video,
@@ -19,15 +22,19 @@ import { cn } from "@/lib/utils";
 
 const nav = [
   { to: "/dashboard", label: "শুরু", icon: Home },
+  { to: "/school", label: "স্কুল", icon: School2 },
+  { to: "/students", label: "ছাত্র", icon: GraduationCap },
+  { to: "/competitions", label: "প্রতিযোগিতা", icon: Trophy },
   { to: "/subjects", label: "বিষয়", icon: BookOpen },
+  { to: "/search", label: "সার্চ", icon: Search },
   { to: "/bani", label: "সহায়ক", icon: MessageCircleHeart },
-  { to: "/quizzes", label: "কুইজ", icon: Brain },
-  { to: "/games", label: "গেম", icon: Gamepad2 },
+  { to: "/student-health", label: "স্বাস্থ্য", icon: Activity },
+  { to: "/quiz", label: "কুইজ", icon: Brain },
   { to: "/special-game", label: "Special Game", icon: Swords },
   { to: "/free-board", label: "বোর্ড", icon: Palette },
   { to: "/classmates", label: "ক্লাসমেট", icon: Users },
   { to: "/live-class", label: "লাইভ", icon: Video },
-  { to: "/library", label: "লাইব্রেরি", icon: Video },
+  { to: "/library", label: "লাইব্রেরি", icon: BookOpen },
   { to: "/certificates", label: "সার্টিফিকেট", icon: ScrollText },
   { to: "/leaderboard", label: "র‍্যাঙ্ক", icon: Trophy },
 ] as const;
@@ -43,7 +50,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="glass-strong rounded-[2rem] p-8 text-center max-w-md w-full">
           <div className="text-4xl mb-3 animate-float">📚</div>
           <h1 className="text-2xl font-bold">তোমার স্কুল লোড হচ্ছে</h1>
-          <p className="text-sm text-muted-foreground mt-2">সেশন যাচাই করা হচ্ছে, একটু অপেক্ষা করো।</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            সেশন যাচাই করা হচ্ছে, একটু অপেক্ষা করো।
+          </p>
         </div>
       </div>
     );
@@ -54,7 +63,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Sidebar — desktop */}
       <aside className="hidden lg:flex w-64 flex-col gap-2 p-4 sticky top-0 h-screen">
         <Link to="/dashboard" className="flex items-center gap-2 px-3 py-4">
-          <img src="/assets/e-pathshala-logo.png" alt="E-পাঠশালা" className="w-12 h-12 rounded-2xl object-cover shadow-glow bg-white" />
+          <img
+            src="/assets/e-pathshala-logo.png"
+            alt="E-পাঠশালা"
+            className="w-12 h-12 rounded-2xl object-cover shadow-glow bg-white"
+          />
           <div>
             <div className="font-display font-bold text-lg leading-none">E-পাঠশালা</div>
             <div className="text-xs text-muted-foreground">ডিজিটাল শেখার স্কুল</div>
@@ -91,7 +104,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="min-w-0">
               <div className="font-semibold truncate">{user.name}</div>
               <div className="text-xs text-muted-foreground">
-                Class {user.class} · {user.role.charAt(0).toUpperCase() + user.role.slice(1)} · Lv {user.level}
+                Class {user.class} · {user.role.charAt(0).toUpperCase() + user.role.slice(1)} · Lv{" "}
+                {user.level}
               </div>
             </div>
           </div>
@@ -115,8 +129,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="flex-1 min-w-0 pb-24 lg:pb-8">{children}</main>
 
       {/* Mobile bottom nav */}
-      <nav className="lg:hidden fixed bottom-3 left-3 right-3 z-40 glass-strong rounded-2xl px-2 py-2 flex items-center justify-around">
-        {nav.slice(0, 9).map((item) => {
+      <nav className="lg:hidden fixed bottom-3 left-3 right-3 z-40 glass-strong rounded-2xl px-2 py-2 flex items-center justify-around overflow-x-auto">
+        {nav.slice(0, 7).map((item) => {
           const Icon = item.icon;
           const active = pathname === item.to || pathname.startsWith(item.to + "/");
           return (
@@ -137,7 +151,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <footer className="fixed left-1/2 -translate-x-1/2 bottom-20 lg:bottom-4 z-30 pointer-events-none">
         <div className="pointer-events-auto glass-strong px-4 py-2 rounded-full text-[11px] md:text-xs text-muted-foreground shadow-soft text-center">
-          Created &amp; Developed by Fardin Hasan, Kachua Govt Pilot High School. Firebase-powered learning workspace.
+          Created &amp; Developed by Fardin Hasan, Kachua Govt Pilot High School. Firebase-powered
+          learning workspace.
         </div>
       </footer>
     </div>

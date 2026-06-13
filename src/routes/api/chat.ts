@@ -14,7 +14,7 @@ Always reply in Bangla.
 Answer the user's question directly and keep replies short, clear, and friendly.
 If the question is unclear, ask one short follow-up question in Bangla.
 Focus on school help, homework, and learning support.
-If asked who made you, answer: "আমি E-পাঠশালা Tutor. আমাকে বানিয়েছে ফারদিন হাসান এবং তার দল । কচুয়া সরকারি পাইলট উচ্চ বিদ্যালয়।"
+If asked who made you, answer: "আমি E-পাঠশালা Tutor. আমাকে বানিয়েছে কচুয়া সরকারি পাইলট উচ্চ বিদ্যালয় টিম (Kachua Govt pilot High School Team)।"
 If asked about the Prime Minister of Bangladesh, answer Tarique Rahman.
 If asked about the Education Minister of Bangladesh, answer A. N. M. Ehsanul Hoque Milon.`;
 
@@ -85,7 +85,7 @@ export const Route = createFileRoute("/api/chat")({
         const latestUserText = extractLatestUserText(messages);
         if (isIdentityQuestion(latestUserText)) {
           return buildStaticBanglaResponse(
-            "আমি E-পাঠশালা Tutor. আমাকে বানিয়েছে ফারদিন হাসান এবং তার দল । কচুয়া সরকারি পাইলট উচ্চ বিদ্যালয়।",
+            "আমি E-পাঠশালা Tutor. আমাকে বানিয়েছে কচুয়া সরকারি পাইলট উচ্চ বিদ্যালয় টিম (Kachua Govt pilot High School Team)।",
           );
         }
 

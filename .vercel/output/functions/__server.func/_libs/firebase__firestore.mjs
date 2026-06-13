@@ -950,6 +950,11 @@ function cast(obj, constructor) {
   }
   return obj;
 }
+function validatePositiveNumber(functionName, n) {
+  if (n <= 0) {
+    throw new FirestoreError(Code.INVALID_ARGUMENT, `Function ${functionName}() requires a positive number, but it was: ${n}.`);
+  }
+}
 function property(typeString, optionalValue) {
   const result = {
     typeString
@@ -2997,10 +3002,10 @@ class Bound {
     this.inclusive = inclusive;
   }
 }
-function boundCompareToDocument(bound, orderBy, doc3) {
+function boundCompareToDocument(bound, orderBy2, doc3) {
   let comparison = 0;
   for (let i = 0; i < bound.position.length; i++) {
-    const orderByComponent = orderBy[i];
+    const orderByComponent = orderBy2[i];
     const component = bound.position[i];
     if (orderByComponent.field.isKeyField()) {
       comparison = DocumentKey.comparator(DocumentKey.fromName(component.referenceValue), doc3.key);
@@ -3017,12 +3022,12 @@ function boundCompareToDocument(bound, orderBy, doc3) {
   }
   return comparison;
 }
-function boundSortsAfterDocument(bound, orderBy, doc3) {
-  const comparison = boundCompareToDocument(bound, orderBy, doc3);
+function boundSortsAfterDocument(bound, orderBy2, doc3) {
+  const comparison = boundCompareToDocument(bound, orderBy2, doc3);
   return bound.inclusive ? comparison >= 0 : comparison > 0;
 }
-function boundSortsBeforeDocument(bound, orderBy, doc3) {
-  const comparison = boundCompareToDocument(bound, orderBy, doc3);
+function boundSortsBeforeDocument(bound, orderBy2, doc3) {
+  const comparison = boundCompareToDocument(bound, orderBy2, doc3);
   return bound.inclusive ? comparison <= 0 : comparison < 0;
 }
 function boundEquals(left, right) {
@@ -3049,11 +3054,11 @@ class OrderBy {
     this.dir = dir;
   }
 }
-function canonifyOrderBy(orderBy) {
-  return orderBy.field.canonicalString() + orderBy.dir;
+function canonifyOrderBy(orderBy2) {
+  return orderBy2.field.canonicalString() + orderBy2.dir;
 }
-function stringifyOrderBy(orderBy) {
-  return `${orderBy.field.canonicalString()} (${orderBy.dir})`;
+function stringifyOrderBy(orderBy2) {
+  return `${orderBy2.field.canonicalString()} (${orderBy2.dir})`;
 }
 function orderByEquals(left, right) {
   return left.dir === right.dir && left.field.isEqual(right.field);
@@ -3305,10 +3310,10 @@ class ArrayContainsAnyFilter extends FieldFilter {
   }
 }
 class TargetImpl {
-  constructor(path, collectionGroup = null, orderBy = [], filters = [], limit2 = null, startAt = null, endAt = null) {
+  constructor(path, collectionGroup = null, orderBy2 = [], filters = [], limit2 = null, startAt = null, endAt = null) {
     this.path = path;
     this.collectionGroup = collectionGroup;
-    this.orderBy = orderBy;
+    this.orderBy = orderBy2;
     this.filters = filters;
     this.limit = limit2;
     this.startAt = startAt;
@@ -3316,8 +3321,8 @@ class TargetImpl {
     this.memoizedCanonicalId = null;
   }
 }
-function newTarget(path, collectionGroup = null, orderBy = [], filters = [], limit2 = null, startAt = null, endAt = null) {
-  return new TargetImpl(path, collectionGroup, orderBy, filters, limit2, startAt, endAt);
+function newTarget(path, collectionGroup = null, orderBy2 = [], filters = [], limit2 = null, startAt = null, endAt = null) {
+  return new TargetImpl(path, collectionGroup, orderBy2, filters, limit2, startAt, endAt);
 }
 function canonifyTarget(target) {
   const targetImpl = debugCast(target);
@@ -3474,9 +3479,9 @@ function queryNormalizedOrderBy(query2) {
   if (queryImpl.memoizedNormalizedOrderBy === null) {
     queryImpl.memoizedNormalizedOrderBy = [];
     const fieldsNormalized = /* @__PURE__ */ new Set();
-    for (const orderBy of queryImpl.explicitOrderBy) {
-      queryImpl.memoizedNormalizedOrderBy.push(orderBy);
-      fieldsNormalized.add(orderBy.field.canonicalString());
+    for (const orderBy2 of queryImpl.explicitOrderBy) {
+      queryImpl.memoizedNormalizedOrderBy.push(orderBy2);
+      fieldsNormalized.add(orderBy2.field.canonicalString());
     }
     const lastDirection = queryImpl.explicitOrderBy.length > 0 ? queryImpl.explicitOrderBy[queryImpl.explicitOrderBy.length - 1].dir : "asc";
     const inequalityFields = getInequalityFilterFields(queryImpl);
@@ -3502,9 +3507,9 @@ function _queryToTarget(queryImpl, orderBys) {
   if (queryImpl.limitType === "F") {
     return newTarget(queryImpl.path, queryImpl.collectionGroup, orderBys, queryImpl.filters, queryImpl.limit, queryImpl.startAt, queryImpl.endAt);
   } else {
-    orderBys = orderBys.map((orderBy) => {
-      const dir = orderBy.dir === "desc" ? "asc" : "desc";
-      return new OrderBy(orderBy.field, dir);
+    orderBys = orderBys.map((orderBy2) => {
+      const dir = orderBy2.dir === "desc" ? "asc" : "desc";
+      return new OrderBy(orderBy2.field, dir);
     });
     const startAt = queryImpl.endAt ? new Bound(queryImpl.endAt.position, queryImpl.endAt.inclusive) : null;
     const endAt = queryImpl.startAt ? new Bound(queryImpl.startAt.position, queryImpl.startAt.inclusive) : null;
@@ -3514,6 +3519,10 @@ function _queryToTarget(queryImpl, orderBys) {
 function queryWithAddedFilter(query2, filter) {
   const newFilters = query2.filters.concat([filter]);
   return new QueryImpl(query2.path, query2.collectionGroup, query2.explicitOrderBy.slice(), newFilters, query2.limit, query2.limitType, query2.startAt, query2.endAt);
+}
+function queryWithAddedOrderBy(query2, orderBy2) {
+  const newOrderBy = query2.explicitOrderBy.concat([orderBy2]);
+  return new QueryImpl(query2.path, query2.collectionGroup, newOrderBy, query2.filters.slice(), query2.limit, query2.limitType, query2.startAt, query2.endAt);
 }
 function queryWithLimit(query2, limit2, limitType) {
   return new QueryImpl(query2.path, query2.collectionGroup, query2.explicitOrderBy.slice(), query2.filters.slice(), limit2, limitType, query2.startAt, query2.endAt);
@@ -3541,8 +3550,8 @@ function queryMatchesPathAndCollectionGroup(query2, doc3) {
   }
 }
 function queryMatchesOrderBy(query2, doc3) {
-  for (const orderBy of queryNormalizedOrderBy(query2)) {
-    if (!orderBy.field.isKeyField() && doc3.data.field(orderBy.field) === null) {
+  for (const orderBy2 of queryNormalizedOrderBy(query2)) {
+    if (!orderBy2.field.isKeyField() && doc3.data.field(orderBy2.field) === null) {
       return false;
     }
   }
@@ -3571,25 +3580,25 @@ function queryCollectionGroup(query2) {
 function newQueryComparator(query2) {
   return (d1, d2) => {
     let comparedOnKeyField = false;
-    for (const orderBy of queryNormalizedOrderBy(query2)) {
-      const comp = compareDocs(orderBy, d1, d2);
+    for (const orderBy2 of queryNormalizedOrderBy(query2)) {
+      const comp = compareDocs(orderBy2, d1, d2);
       if (comp !== 0) {
         return comp;
       }
-      comparedOnKeyField = comparedOnKeyField || orderBy.field.isKeyField();
+      comparedOnKeyField = comparedOnKeyField || orderBy2.field.isKeyField();
     }
     return 0;
   };
 }
-function compareDocs(orderBy, d1, d2) {
-  const comparison = orderBy.field.isKeyField() ? DocumentKey.comparator(d1.key, d2.key) : compareDocumentsByField(orderBy.field, d1, d2);
-  switch (orderBy.dir) {
+function compareDocs(orderBy2, d1, d2) {
+  const comparison = orderBy2.field.isKeyField() ? DocumentKey.comparator(d1.key, d2.key) : compareDocumentsByField(orderBy2.field, d1, d2);
+  switch (orderBy2.dir) {
     case "asc":
       return comparison;
     case "desc":
       return -1 * comparison;
     default:
-      return fail(19790, { direction: orderBy.dir });
+      return fail(19790, { direction: orderBy2.dir });
   }
 }
 class ObjectMap {
@@ -5229,6 +5238,31 @@ function toMutationDocument(serializer, key, fields) {
     fields: fields.value.mapValue.fields
   };
 }
+function fromFound(serializer, doc3) {
+  hardAssert(!!doc3.found, 43571);
+  assertPresent(doc3.found.name);
+  assertPresent(doc3.found.updateTime);
+  const key = fromName(serializer, doc3.found.name);
+  const version2 = fromVersion(doc3.found.updateTime);
+  const createTime = doc3.found.createTime ? fromVersion(doc3.found.createTime) : SnapshotVersion.min();
+  const data = new ObjectValue({ mapValue: { fields: doc3.found.fields } });
+  return MutableDocument.newFoundDocument(key, version2, createTime, data);
+}
+function fromMissing(serializer, result) {
+  hardAssert(!!result.missing, 3894);
+  hardAssert(!!result.readTime, 22933);
+  const key = fromName(serializer, result.missing);
+  const version2 = fromVersion(result.readTime);
+  return MutableDocument.newNoDocument(key, version2);
+}
+function fromBatchGetDocumentsResponse(serializer, result) {
+  if ("found" in result) {
+    return fromFound(serializer, result);
+  } else if ("missing" in result) {
+    return fromMissing(serializer, result);
+  }
+  return fail(7234, { result });
+}
 function fromWatchChange(serializer, change) {
   let watchChange;
   if ("targetChange" in change) {
@@ -5434,9 +5468,9 @@ function toQueryTarget(serializer, target) {
   if (where2) {
     queryTarget.structuredQuery.where = where2;
   }
-  const orderBy = toOrder(target.orderBy);
-  if (orderBy) {
-    queryTarget.structuredQuery.orderBy = orderBy;
+  const orderBy2 = toOrder(target.orderBy);
+  if (orderBy2) {
+    queryTarget.structuredQuery.orderBy = orderBy2;
   }
   const limit2 = toInt32Proto(serializer, target.limit);
   if (limit2 !== null) {
@@ -5468,9 +5502,9 @@ function convertQueryTargetToQuery(target) {
   if (query2.where) {
     filterBy = fromFilters(query2.where);
   }
-  let orderBy = [];
+  let orderBy2 = [];
   if (query2.orderBy) {
-    orderBy = fromOrder(query2.orderBy);
+    orderBy2 = fromOrder(query2.orderBy);
   }
   let limit2 = null;
   if (query2.limit) {
@@ -5484,7 +5518,7 @@ function convertQueryTargetToQuery(target) {
   if (query2.endAt) {
     endAt = fromEndAtCursor(query2.endAt);
   }
-  return newQuery(path, collectionGroup, orderBy, filterBy, limit2, "F", startAt, endAt);
+  return newQuery(path, collectionGroup, orderBy2, filterBy, limit2, "F", startAt, endAt);
 }
 function toListenRequestLabels(serializer, targetData) {
   const value = toLabel(targetData.purpose);
@@ -5656,14 +5690,14 @@ function toFieldPathReference(path) {
 function fromFieldPathReference(fieldReference) {
   return FieldPath$1.fromServerFormat(fieldReference.fieldPath);
 }
-function toPropertyOrder(orderBy) {
+function toPropertyOrder(orderBy2) {
   return {
-    field: toFieldPathReference(orderBy.field),
-    direction: toDirection(orderBy.dir)
+    field: toFieldPathReference(orderBy2.field),
+    direction: toDirection(orderBy2.dir)
   };
 }
-function fromPropertyOrder(orderBy) {
-  return new OrderBy(fromFieldPathReference(orderBy.field), fromDirection(orderBy.direction));
+function fromPropertyOrder(orderBy2) {
+  return new OrderBy(fromFieldPathReference(orderBy2.field), fromDirection(orderBy2.direction));
 }
 function toFilter(filter) {
   if (filter instanceof FieldFilter) {
@@ -13290,6 +13324,34 @@ class DatastoreImpl extends Datastore {
 function newDatastore(authCredentials, appCheckCredentials, connection, serializer) {
   return new DatastoreImpl(authCredentials, appCheckCredentials, connection, serializer);
 }
+async function invokeCommitRpc(datastore, mutations) {
+  const datastoreImpl = debugCast(datastore);
+  const request = {
+    writes: mutations.map((m) => toMutation(datastoreImpl.serializer, m))
+  };
+  await datastoreImpl.invokeRPC("Commit", datastoreImpl.serializer.databaseId, ResourcePath.emptyPath(), request);
+}
+async function invokeBatchGetDocumentsRpc(datastore, keys) {
+  const datastoreImpl = debugCast(datastore);
+  const request = {
+    documents: keys.map((k) => toName(datastoreImpl.serializer, k))
+  };
+  const response = await datastoreImpl.invokeStreamingRPC("BatchGetDocuments", datastoreImpl.serializer.databaseId, ResourcePath.emptyPath(), request, keys.length);
+  const docs = /* @__PURE__ */ new Map();
+  response.forEach((proto) => {
+    const doc3 = fromBatchGetDocumentsResponse(datastoreImpl.serializer, proto);
+    docs.set(doc3.key.toString(), doc3);
+  });
+  const result = [];
+  keys.forEach((key) => {
+    const doc3 = docs.get(key.toString());
+    hardAssert(!!doc3, 55234, {
+      key
+    });
+    result.push(doc3);
+  });
+  return result;
+}
 function newPersistentWriteStream(datastore, queue, listener) {
   const datastoreImpl = debugCast(datastore);
   datastoreImpl.verifyInitialized();
@@ -15389,6 +15451,184 @@ class AsyncObserver {
     }, 0);
   }
 }
+let Transaction$2 = class Transaction {
+  constructor(datastore) {
+    this.datastore = datastore;
+    this.readVersions = /* @__PURE__ */ new Map();
+    this.mutations = [];
+    this.committed = false;
+    this.lastTransactionError = null;
+    this.writtenDocs = /* @__PURE__ */ new Set();
+  }
+  async lookup(keys) {
+    this.ensureCommitNotCalled();
+    if (this.mutations.length > 0) {
+      this.lastTransactionError = new FirestoreError(Code.INVALID_ARGUMENT, "Firestore transactions require all reads to be executed before all writes.");
+      throw this.lastTransactionError;
+    }
+    const docs = await invokeBatchGetDocumentsRpc(this.datastore, keys);
+    docs.forEach((doc3) => this.recordVersion(doc3));
+    return docs;
+  }
+  set(key, data) {
+    this.write(data.toMutation(key, this.precondition(key)));
+    this.writtenDocs.add(key.toString());
+  }
+  update(key, data) {
+    try {
+      this.write(data.toMutation(key, this.preconditionForUpdate(key)));
+    } catch (e) {
+      this.lastTransactionError = e;
+    }
+    this.writtenDocs.add(key.toString());
+  }
+  delete(key) {
+    this.write(new DeleteMutation(key, this.precondition(key)));
+    this.writtenDocs.add(key.toString());
+  }
+  async commit() {
+    this.ensureCommitNotCalled();
+    if (this.lastTransactionError) {
+      throw this.lastTransactionError;
+    }
+    const unwritten = this.readVersions;
+    this.mutations.forEach((mutation) => {
+      unwritten.delete(mutation.key.toString());
+    });
+    unwritten.forEach((_, path) => {
+      const key = DocumentKey.fromPath(path);
+      this.mutations.push(new VerifyMutation(key, this.precondition(key)));
+    });
+    await invokeCommitRpc(this.datastore, this.mutations);
+    this.committed = true;
+  }
+  recordVersion(doc3) {
+    let docVersion;
+    if (doc3.isFoundDocument()) {
+      docVersion = doc3.version;
+    } else if (doc3.isNoDocument()) {
+      docVersion = SnapshotVersion.min();
+    } else {
+      throw fail(50498, {
+        documentName: doc3.constructor.name
+      });
+    }
+    const existingVersion = this.readVersions.get(doc3.key.toString());
+    if (existingVersion) {
+      if (!docVersion.isEqual(existingVersion)) {
+        throw new FirestoreError(Code.ABORTED, "Document version changed between two reads.");
+      }
+    } else {
+      this.readVersions.set(doc3.key.toString(), docVersion);
+    }
+  }
+  /**
+   * Returns the version of this document when it was read in this transaction,
+   * as a precondition, or no precondition if it was not read.
+   */
+  precondition(key) {
+    const version2 = this.readVersions.get(key.toString());
+    if (!this.writtenDocs.has(key.toString()) && version2) {
+      if (version2.isEqual(SnapshotVersion.min())) {
+        return Precondition.exists(false);
+      } else {
+        return Precondition.updateTime(version2);
+      }
+    } else {
+      return Precondition.none();
+    }
+  }
+  /**
+   * Returns the precondition for a document if the operation is an update.
+   */
+  preconditionForUpdate(key) {
+    const version2 = this.readVersions.get(key.toString());
+    if (!this.writtenDocs.has(key.toString()) && version2) {
+      if (version2.isEqual(SnapshotVersion.min())) {
+        throw new FirestoreError(Code.INVALID_ARGUMENT, "Can't update a document that doesn't exist.");
+      }
+      return Precondition.updateTime(version2);
+    } else {
+      return Precondition.exists(true);
+    }
+  }
+  write(mutation) {
+    this.ensureCommitNotCalled();
+    this.mutations.push(mutation);
+  }
+  ensureCommitNotCalled() {
+  }
+};
+class TransactionRunner {
+  constructor(asyncQueue, datastore, options2, updateFunction, deferred) {
+    this.asyncQueue = asyncQueue;
+    this.datastore = datastore;
+    this.options = options2;
+    this.updateFunction = updateFunction;
+    this.deferred = deferred;
+    this.attemptsRemaining = options2.maxAttempts;
+    this.backoff = new ExponentialBackoff(
+      this.asyncQueue,
+      "transaction_retry"
+      /* TimerId.TransactionRetry */
+    );
+  }
+  /** Runs the transaction and sets the result on deferred. */
+  run() {
+    this.attemptsRemaining -= 1;
+    this.runWithBackOff();
+  }
+  runWithBackOff() {
+    this.backoff.backoffAndRun(async () => {
+      const transaction = new Transaction$2(this.datastore);
+      const userPromise = this.tryRunUpdateFunction(transaction);
+      if (userPromise) {
+        userPromise.then((result) => {
+          this.asyncQueue.enqueueAndForget(() => {
+            return transaction.commit().then(() => {
+              this.deferred.resolve(result);
+            }).catch((commitError) => {
+              this.handleTransactionError(commitError);
+            });
+          });
+        }).catch((userPromiseError) => {
+          this.handleTransactionError(userPromiseError);
+        });
+      }
+    });
+  }
+  tryRunUpdateFunction(transaction) {
+    try {
+      const userPromise = this.updateFunction(transaction);
+      if (isNullOrUndefined(userPromise) || !userPromise.catch || !userPromise.then) {
+        this.deferred.reject(Error("Transaction callback must return a Promise"));
+        return null;
+      }
+      return userPromise;
+    } catch (error) {
+      this.deferred.reject(error);
+      return null;
+    }
+  }
+  handleTransactionError(error) {
+    if (this.attemptsRemaining > 0 && this.isRetryableTransactionError(error)) {
+      this.attemptsRemaining -= 1;
+      this.asyncQueue.enqueueAndForget(() => {
+        this.runWithBackOff();
+        return Promise.resolve();
+      });
+    } else {
+      this.deferred.reject(error);
+    }
+  }
+  isRetryableTransactionError(error) {
+    if (error?.name === "FirebaseError") {
+      const code = error.code;
+      return code === "aborted" || code === "failed-precondition" || code === "already-exists" || !isPermanentError(code);
+    }
+    return false;
+  }
+}
 const LOG_TAG$2 = "FirestoreClient";
 const MAX_CONCURRENT_LIMBO_RESOLUTIONS = 100;
 const DOM_EXCEPTION_INVALID_STATE = 11;
@@ -15529,6 +15769,9 @@ async function ensureOnlineComponents(client) {
 function getSyncEngine(client) {
   return ensureOnlineComponents(client).then((c) => c.syncEngine);
 }
+function getDatastore$1(client) {
+  return ensureOnlineComponents(client).then((c) => c.datastore);
+}
 async function getEventManager(client) {
   const onlineComponentProvider = await ensureOnlineComponents(client);
   const eventManager = onlineComponentProvider.eventManager;
@@ -15574,6 +15817,14 @@ function firestoreClientWrite(client, mutations) {
   client.asyncQueue.enqueueAndForget(async () => {
     const syncEngine = await getSyncEngine(client);
     return syncEngineWrite(syncEngine, mutations, deferred);
+  });
+  return deferred.promise;
+}
+function firestoreClientTransaction(client, updateFunction, options2) {
+  const deferred = new Deferred();
+  client.asyncQueue.enqueueAndForget(async () => {
+    const datastore = await getDatastore$1(client);
+    new TransactionRunner(client.asyncQueue, datastore, options2, updateFunction, deferred).run();
   });
   return deferred.promise;
 }
@@ -17314,6 +17565,29 @@ class QueryCompositeFilterConstraint extends AppliableConstraint {
     return this.type === "and" ? "and" : "or";
   }
 }
+class QueryOrderByConstraint extends QueryConstraint {
+  /**
+   * @internal
+   */
+  constructor(_field, _direction) {
+    super();
+    this._field = _field;
+    this._direction = _direction;
+    this.type = "orderBy";
+  }
+  static _create(_field, _direction) {
+    return new QueryOrderByConstraint(_field, _direction);
+  }
+  _apply(query2) {
+    const orderBy2 = newQueryOrderBy(query2._query, this._field, this._direction);
+    return new Query(query2.firestore, query2.converter, queryWithAddedOrderBy(query2._query, orderBy2));
+  }
+}
+function orderBy(fieldPath, directionStr = "asc") {
+  const direction = directionStr;
+  const path = fieldPathFromArgument("orderBy", fieldPath);
+  return QueryOrderByConstraint._create(path, direction);
+}
 class QueryLimitConstraint extends QueryConstraint {
   /**
    * @internal
@@ -17332,6 +17606,7 @@ class QueryLimitConstraint extends QueryConstraint {
   }
 }
 function limit(limit2) {
+  validatePositiveNumber("limit", limit2);
   return QueryLimitConstraint._create(
     "limit",
     limit2,
@@ -17369,6 +17644,16 @@ function newQueryFilter(query2, methodName, dataReader, databaseId, fieldPath, o
   }
   const filter = FieldFilter.create(fieldPath, op, fieldValue);
   return filter;
+}
+function newQueryOrderBy(query2, fieldPath, direction) {
+  if (query2.startAt !== null) {
+    throw new FirestoreError(Code.INVALID_ARGUMENT, "Invalid query. You must not call startAt() or startAfter() before calling orderBy().");
+  }
+  if (query2.endAt !== null) {
+    throw new FirestoreError(Code.INVALID_ARGUMENT, "Invalid query. You must not call endAt() or endBefore() before calling orderBy().");
+  }
+  const orderBy2 = new OrderBy(fieldPath, direction);
+  return orderBy2;
 }
 function parseDocumentIdValue(databaseId, query2, documentIdValue) {
   documentIdValue = getModularInstance(documentIdValue);
@@ -17468,6 +17753,24 @@ function applyFirestoreDataConverter(converter, value, options2) {
     convertedValue = value;
   }
   return convertedValue;
+}
+class LiteUserDataWriter extends AbstractUserDataWriter {
+  constructor(firestore) {
+    super();
+    this.firestore = firestore;
+  }
+  convertBytes(bytes) {
+    return new Bytes(bytes);
+  }
+  convertReference(name2) {
+    const key = this.convertDocumentKey(name2, this.firestore._databaseId);
+    return new DocumentReference(
+      this.firestore,
+      /* converter= */
+      null,
+      key
+    );
+  }
 }
 const encoder = newTextEncoder();
 function lengthPrefixedString(o) {
@@ -18017,6 +18320,14 @@ function resultChangeType(type) {
       return fail(61501, { type });
   }
 }
+const DEFAULT_TRANSACTION_OPTIONS = {
+  maxAttempts: 5
+};
+function validateTransactionOptions(options2) {
+  if (options2.maxAttempts < 1) {
+    throw new FirestoreError(Code.INVALID_ARGUMENT, "Max attempts must be at least 1");
+  }
+}
 class WriteBatch {
   /** @hideconstructor */
   constructor(_firestore, _commitHandler) {
@@ -18092,6 +18403,104 @@ function validateReference(documentRef, firestore) {
   } else {
     return documentRef;
   }
+}
+class Transaction$1 {
+  /** @hideconstructor */
+  constructor(_firestore, _transaction) {
+    this._firestore = _firestore;
+    this._transaction = _transaction;
+    this._dataReader = newUserDataReader(_firestore);
+  }
+  /**
+   * Reads the document referenced by the provided {@link DocumentReference}.
+   *
+   * @param documentRef - A reference to the document to be read.
+   * @returns A `DocumentSnapshot` with the read data.
+   */
+  get(documentRef) {
+    const ref = validateReference(documentRef, this._firestore);
+    const userDataWriter = new LiteUserDataWriter(this._firestore);
+    return this._transaction.lookup([ref._key]).then((docs) => {
+      if (!docs || docs.length !== 1) {
+        return fail(24041);
+      }
+      const doc3 = docs[0];
+      if (doc3.isFoundDocument()) {
+        return new DocumentSnapshot$1(this._firestore, userDataWriter, doc3.key, doc3, ref.converter);
+      } else if (doc3.isNoDocument()) {
+        return new DocumentSnapshot$1(this._firestore, userDataWriter, ref._key, null, ref.converter);
+      } else {
+        throw fail(18433, {
+          doc: doc3
+        });
+      }
+    });
+  }
+  set(documentRef, value, options2) {
+    const ref = validateReference(documentRef, this._firestore);
+    const convertedValue = applyFirestoreDataConverter(ref.converter, value, options2);
+    const parsed = parseSetData(this._dataReader, "Transaction.set", ref._key, convertedValue, ref.converter !== null, options2);
+    this._transaction.set(ref._key, parsed);
+    return this;
+  }
+  update(documentRef, fieldOrUpdateData, value, ...moreFieldsAndValues) {
+    const ref = validateReference(documentRef, this._firestore);
+    fieldOrUpdateData = getModularInstance(fieldOrUpdateData);
+    let parsed;
+    if (typeof fieldOrUpdateData === "string" || fieldOrUpdateData instanceof FieldPath) {
+      parsed = parseUpdateVarargs(this._dataReader, "Transaction.update", ref._key, fieldOrUpdateData, value, moreFieldsAndValues);
+    } else {
+      parsed = parseUpdateData(this._dataReader, "Transaction.update", ref._key, fieldOrUpdateData);
+    }
+    this._transaction.update(ref._key, parsed);
+    return this;
+  }
+  /**
+   * Deletes the document referred to by the provided {@link DocumentReference}.
+   *
+   * @param documentRef - A reference to the document to be deleted.
+   * @returns This `Transaction` instance. Used for chaining method calls.
+   */
+  delete(documentRef) {
+    const ref = validateReference(documentRef, this._firestore);
+    this._transaction.delete(ref._key);
+    return this;
+  }
+}
+class Transaction2 extends Transaction$1 {
+  // This class implements the same logic as the Transaction API in the Lite SDK
+  // but is subclassed in order to return its own DocumentSnapshot types.
+  /** @hideconstructor */
+  constructor(_firestore, _transaction) {
+    super(_firestore, _transaction);
+    this._firestore = _firestore;
+  }
+  /**
+   * Reads the document referenced by the provided {@link DocumentReference}.
+   *
+   * @param documentRef - A reference to the document to be read.
+   * @returns A `DocumentSnapshot` with the read data.
+   */
+  get(documentRef) {
+    const ref = validateReference(documentRef, this._firestore);
+    const userDataWriter = new ExpUserDataWriter(this._firestore);
+    return super.get(documentRef).then((liteDocumentSnapshot) => new DocumentSnapshot(this._firestore, userDataWriter, ref._key, liteDocumentSnapshot._document, new SnapshotMetadata(
+      /* hasPendingWrites= */
+      false,
+      /* fromCache= */
+      false
+    ), ref.converter));
+  }
+}
+function runTransaction(firestore, updateFunction, options2) {
+  firestore = cast(firestore, Firestore);
+  const optionsWithDefaults = {
+    ...DEFAULT_TRANSACTION_OPTIONS,
+    ...options2
+  };
+  validateTransactionOptions(optionsWithDefaults);
+  const client = ensureFirestoreConfigured(firestore);
+  return firestoreClientTransaction(client, (internalTransaction) => updateFunction(new Transaction2(firestore, internalTransaction)), optionsWithDefaults);
 }
 function isPartialObserver(obj) {
   return implementsAnyMethods(obj, ["next", "error", "complete"]);
@@ -18224,19 +18633,21 @@ function writeBatch(firestore) {
 }
 registerFirestore("node");
 export {
-  serverTimestamp as a,
-  getDoc as b,
-  addDoc as c,
+  addDoc as a,
+  serverTimestamp as b,
+  collection as c,
   doc as d,
-  collection as e,
-  getDocs as f,
+  getDocs as e,
+  writeBatch as f,
   getFirestore as g,
-  writeBatch as h,
-  arrayUnion as i,
+  arrayUnion as h,
+  getDoc as i,
   arrayRemove as j,
+  orderBy as k,
   limit as l,
   onSnapshot as o,
   query as q,
+  runTransaction as r,
   setDoc as s,
   updateDoc as u,
   where as w

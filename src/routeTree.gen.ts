@@ -10,8 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubjectsRouteImport } from './routes/subjects'
+import { Route as StudentsRouteImport } from './routes/students'
+import { Route as StudentHealthRouteImport } from './routes/student-health'
 import { Route as SpecialGameRouteImport } from './routes/special-game'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SchoolsRouteImport } from './routes/schools'
+import { Route as SchoolRouteImport } from './routes/school'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
+import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as PdfViewerRouteImport } from './routes/pdf-viewer'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LiveClassRouteImport } from './routes/live-class'
@@ -19,13 +25,17 @@ import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as GamesRouteImport } from './routes/games'
 import { Route as FreeBoardRouteImport } from './routes/free-board'
+import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as ClassmatesRouteImport } from './routes/classmates'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as BaniRouteImport } from './routes/bani'
 import { Route as BangladeshMapRouteImport } from './routes/bangladesh-map'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SubjectsSlugRouteImport } from './routes/subjects.$slug'
+import { Route as StudentsStudentIdRouteImport } from './routes/students.$studentId'
+import { Route as SchoolsSchoolIdRouteImport } from './routes/schools.$schoolId'
 import { Route as ApiCloudinaryUploadRouteImport } from './routes/api/cloudinary-upload'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
@@ -34,14 +44,44 @@ const SubjectsRoute = SubjectsRouteImport.update({
   path: '/subjects',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentsRoute = StudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentHealthRoute = StudentHealthRouteImport.update({
+  id: '/student-health',
+  path: '/student-health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SpecialGameRoute = SpecialGameRouteImport.update({
   id: '/special-game',
   path: '/special-game',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchoolsRoute = SchoolsRouteImport.update({
+  id: '/schools',
+  path: '/schools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchoolRoute = SchoolRouteImport.update({
+  id: '/school',
+  path: '/school',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuizzesRoute = QuizzesRouteImport.update({
   id: '/quizzes',
   path: '/quizzes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuizRoute = QuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PdfViewerRoute = PdfViewerRouteImport.update({
@@ -79,9 +119,19 @@ const FreeBoardRoute = FreeBoardRouteImport.update({
   path: '/free-board',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EcosystemRoute = EcosystemRouteImport.update({
+  id: '/ecosystem',
+  path: '/ecosystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClassmatesRoute = ClassmatesRouteImport.update({
@@ -114,6 +164,16 @@ const SubjectsSlugRoute = SubjectsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => SubjectsRoute,
 } as any)
+const StudentsStudentIdRoute = StudentsStudentIdRouteImport.update({
+  id: '/$studentId',
+  path: '/$studentId',
+  getParentRoute: () => StudentsRoute,
+} as any)
+const SchoolsSchoolIdRoute = SchoolsSchoolIdRouteImport.update({
+  id: '/$schoolId',
+  path: '/$schoolId',
+  getParentRoute: () => SchoolsRoute,
+} as any)
 const ApiCloudinaryUploadRoute = ApiCloudinaryUploadRouteImport.update({
   id: '/api/cloudinary-upload',
   path: '/api/cloudinary-upload',
@@ -131,7 +191,9 @@ export interface FileRoutesByFullPath {
   '/bani': typeof BaniRoute
   '/certificates': typeof CertificatesRoute
   '/classmates': typeof ClassmatesRoute
+  '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
+  '/ecosystem': typeof EcosystemRoute
   '/free-board': typeof FreeBoardRoute
   '/games': typeof GamesRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -139,11 +201,19 @@ export interface FileRoutesByFullPath {
   '/live-class': typeof LiveClassRoute
   '/login': typeof LoginRoute
   '/pdf-viewer': typeof PdfViewerRoute
+  '/quiz': typeof QuizRoute
   '/quizzes': typeof QuizzesRoute
+  '/school': typeof SchoolRoute
+  '/schools': typeof SchoolsRouteWithChildren
+  '/search': typeof SearchRoute
   '/special-game': typeof SpecialGameRoute
+  '/student-health': typeof StudentHealthRoute
+  '/students': typeof StudentsRouteWithChildren
   '/subjects': typeof SubjectsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/api/cloudinary-upload': typeof ApiCloudinaryUploadRoute
+  '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/students/$studentId': typeof StudentsStudentIdRoute
   '/subjects/$slug': typeof SubjectsSlugRoute
 }
 export interface FileRoutesByTo {
@@ -152,7 +222,9 @@ export interface FileRoutesByTo {
   '/bani': typeof BaniRoute
   '/certificates': typeof CertificatesRoute
   '/classmates': typeof ClassmatesRoute
+  '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
+  '/ecosystem': typeof EcosystemRoute
   '/free-board': typeof FreeBoardRoute
   '/games': typeof GamesRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -160,11 +232,19 @@ export interface FileRoutesByTo {
   '/live-class': typeof LiveClassRoute
   '/login': typeof LoginRoute
   '/pdf-viewer': typeof PdfViewerRoute
+  '/quiz': typeof QuizRoute
   '/quizzes': typeof QuizzesRoute
+  '/school': typeof SchoolRoute
+  '/schools': typeof SchoolsRouteWithChildren
+  '/search': typeof SearchRoute
   '/special-game': typeof SpecialGameRoute
+  '/student-health': typeof StudentHealthRoute
+  '/students': typeof StudentsRouteWithChildren
   '/subjects': typeof SubjectsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/api/cloudinary-upload': typeof ApiCloudinaryUploadRoute
+  '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/students/$studentId': typeof StudentsStudentIdRoute
   '/subjects/$slug': typeof SubjectsSlugRoute
 }
 export interface FileRoutesById {
@@ -174,7 +254,9 @@ export interface FileRoutesById {
   '/bani': typeof BaniRoute
   '/certificates': typeof CertificatesRoute
   '/classmates': typeof ClassmatesRoute
+  '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
+  '/ecosystem': typeof EcosystemRoute
   '/free-board': typeof FreeBoardRoute
   '/games': typeof GamesRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -182,11 +264,19 @@ export interface FileRoutesById {
   '/live-class': typeof LiveClassRoute
   '/login': typeof LoginRoute
   '/pdf-viewer': typeof PdfViewerRoute
+  '/quiz': typeof QuizRoute
   '/quizzes': typeof QuizzesRoute
+  '/school': typeof SchoolRoute
+  '/schools': typeof SchoolsRouteWithChildren
+  '/search': typeof SearchRoute
   '/special-game': typeof SpecialGameRoute
+  '/student-health': typeof StudentHealthRoute
+  '/students': typeof StudentsRouteWithChildren
   '/subjects': typeof SubjectsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/api/cloudinary-upload': typeof ApiCloudinaryUploadRoute
+  '/schools/$schoolId': typeof SchoolsSchoolIdRoute
+  '/students/$studentId': typeof StudentsStudentIdRoute
   '/subjects/$slug': typeof SubjectsSlugRoute
 }
 export interface FileRouteTypes {
@@ -197,7 +287,9 @@ export interface FileRouteTypes {
     | '/bani'
     | '/certificates'
     | '/classmates'
+    | '/competitions'
     | '/dashboard'
+    | '/ecosystem'
     | '/free-board'
     | '/games'
     | '/leaderboard'
@@ -205,11 +297,19 @@ export interface FileRouteTypes {
     | '/live-class'
     | '/login'
     | '/pdf-viewer'
+    | '/quiz'
     | '/quizzes'
+    | '/school'
+    | '/schools'
+    | '/search'
     | '/special-game'
+    | '/student-health'
+    | '/students'
     | '/subjects'
     | '/api/chat'
     | '/api/cloudinary-upload'
+    | '/schools/$schoolId'
+    | '/students/$studentId'
     | '/subjects/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -218,7 +318,9 @@ export interface FileRouteTypes {
     | '/bani'
     | '/certificates'
     | '/classmates'
+    | '/competitions'
     | '/dashboard'
+    | '/ecosystem'
     | '/free-board'
     | '/games'
     | '/leaderboard'
@@ -226,11 +328,19 @@ export interface FileRouteTypes {
     | '/live-class'
     | '/login'
     | '/pdf-viewer'
+    | '/quiz'
     | '/quizzes'
+    | '/school'
+    | '/schools'
+    | '/search'
     | '/special-game'
+    | '/student-health'
+    | '/students'
     | '/subjects'
     | '/api/chat'
     | '/api/cloudinary-upload'
+    | '/schools/$schoolId'
+    | '/students/$studentId'
     | '/subjects/$slug'
   id:
     | '__root__'
@@ -239,7 +349,9 @@ export interface FileRouteTypes {
     | '/bani'
     | '/certificates'
     | '/classmates'
+    | '/competitions'
     | '/dashboard'
+    | '/ecosystem'
     | '/free-board'
     | '/games'
     | '/leaderboard'
@@ -247,11 +359,19 @@ export interface FileRouteTypes {
     | '/live-class'
     | '/login'
     | '/pdf-viewer'
+    | '/quiz'
     | '/quizzes'
+    | '/school'
+    | '/schools'
+    | '/search'
     | '/special-game'
+    | '/student-health'
+    | '/students'
     | '/subjects'
     | '/api/chat'
     | '/api/cloudinary-upload'
+    | '/schools/$schoolId'
+    | '/students/$studentId'
     | '/subjects/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -261,7 +381,9 @@ export interface RootRouteChildren {
   BaniRoute: typeof BaniRoute
   CertificatesRoute: typeof CertificatesRoute
   ClassmatesRoute: typeof ClassmatesRoute
+  CompetitionsRoute: typeof CompetitionsRoute
   DashboardRoute: typeof DashboardRoute
+  EcosystemRoute: typeof EcosystemRoute
   FreeBoardRoute: typeof FreeBoardRoute
   GamesRoute: typeof GamesRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -269,8 +391,14 @@ export interface RootRouteChildren {
   LiveClassRoute: typeof LiveClassRoute
   LoginRoute: typeof LoginRoute
   PdfViewerRoute: typeof PdfViewerRoute
+  QuizRoute: typeof QuizRoute
   QuizzesRoute: typeof QuizzesRoute
+  SchoolRoute: typeof SchoolRoute
+  SchoolsRoute: typeof SchoolsRouteWithChildren
+  SearchRoute: typeof SearchRoute
   SpecialGameRoute: typeof SpecialGameRoute
+  StudentHealthRoute: typeof StudentHealthRoute
+  StudentsRoute: typeof StudentsRouteWithChildren
   SubjectsRoute: typeof SubjectsRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
   ApiCloudinaryUploadRoute: typeof ApiCloudinaryUploadRoute
@@ -285,6 +413,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/students': {
+      id: '/students'
+      path: '/students'
+      fullPath: '/students'
+      preLoaderRoute: typeof StudentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student-health': {
+      id: '/student-health'
+      path: '/student-health'
+      fullPath: '/student-health'
+      preLoaderRoute: typeof StudentHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/special-game': {
       id: '/special-game'
       path: '/special-game'
@@ -292,11 +434,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpecialGameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schools': {
+      id: '/schools'
+      path: '/schools'
+      fullPath: '/schools'
+      preLoaderRoute: typeof SchoolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/school': {
+      id: '/school'
+      path: '/school'
+      fullPath: '/school'
+      preLoaderRoute: typeof SchoolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quizzes': {
       id: '/quizzes'
       path: '/quizzes'
       fullPath: '/quizzes'
       preLoaderRoute: typeof QuizzesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quiz': {
+      id: '/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof QuizRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pdf-viewer': {
@@ -348,11 +518,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FreeBoardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ecosystem': {
+      id: '/ecosystem'
+      path: '/ecosystem'
+      fullPath: '/ecosystem'
+      preLoaderRoute: typeof EcosystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/classmates': {
@@ -397,6 +581,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubjectsSlugRouteImport
       parentRoute: typeof SubjectsRoute
     }
+    '/students/$studentId': {
+      id: '/students/$studentId'
+      path: '/$studentId'
+      fullPath: '/students/$studentId'
+      preLoaderRoute: typeof StudentsStudentIdRouteImport
+      parentRoute: typeof StudentsRoute
+    }
+    '/schools/$schoolId': {
+      id: '/schools/$schoolId'
+      path: '/$schoolId'
+      fullPath: '/schools/$schoolId'
+      preLoaderRoute: typeof SchoolsSchoolIdRouteImport
+      parentRoute: typeof SchoolsRoute
+    }
     '/api/cloudinary-upload': {
       id: '/api/cloudinary-upload'
       path: '/api/cloudinary-upload'
@@ -413,6 +611,29 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface SchoolsRouteChildren {
+  SchoolsSchoolIdRoute: typeof SchoolsSchoolIdRoute
+}
+
+const SchoolsRouteChildren: SchoolsRouteChildren = {
+  SchoolsSchoolIdRoute: SchoolsSchoolIdRoute,
+}
+
+const SchoolsRouteWithChildren =
+  SchoolsRoute._addFileChildren(SchoolsRouteChildren)
+
+interface StudentsRouteChildren {
+  StudentsStudentIdRoute: typeof StudentsStudentIdRoute
+}
+
+const StudentsRouteChildren: StudentsRouteChildren = {
+  StudentsStudentIdRoute: StudentsStudentIdRoute,
+}
+
+const StudentsRouteWithChildren = StudentsRoute._addFileChildren(
+  StudentsRouteChildren,
+)
 
 interface SubjectsRouteChildren {
   SubjectsSlugRoute: typeof SubjectsSlugRoute
@@ -432,7 +653,9 @@ const rootRouteChildren: RootRouteChildren = {
   BaniRoute: BaniRoute,
   CertificatesRoute: CertificatesRoute,
   ClassmatesRoute: ClassmatesRoute,
+  CompetitionsRoute: CompetitionsRoute,
   DashboardRoute: DashboardRoute,
+  EcosystemRoute: EcosystemRoute,
   FreeBoardRoute: FreeBoardRoute,
   GamesRoute: GamesRoute,
   LeaderboardRoute: LeaderboardRoute,
@@ -440,8 +663,14 @@ const rootRouteChildren: RootRouteChildren = {
   LiveClassRoute: LiveClassRoute,
   LoginRoute: LoginRoute,
   PdfViewerRoute: PdfViewerRoute,
+  QuizRoute: QuizRoute,
   QuizzesRoute: QuizzesRoute,
+  SchoolRoute: SchoolRoute,
+  SchoolsRoute: SchoolsRouteWithChildren,
+  SearchRoute: SearchRoute,
   SpecialGameRoute: SpecialGameRoute,
+  StudentHealthRoute: StudentHealthRoute,
+  StudentsRoute: StudentsRouteWithChildren,
   SubjectsRoute: SubjectsRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
   ApiCloudinaryUploadRoute: ApiCloudinaryUploadRoute,

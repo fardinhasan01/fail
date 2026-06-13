@@ -1,4 +1,26 @@
 const getDefaultsFromPostinstall = () => void 0;
+const CONSTANTS = {
+  /**
+   * @define {boolean} Whether this is the client Node.js SDK.
+   */
+  NODE_CLIENT: false,
+  /**
+   * @define {boolean} Whether this is the Admin Node.js SDK.
+   */
+  NODE_ADMIN: false,
+  /**
+   * Firebase SDK Version
+   */
+  SDK_VERSION: "${JSCORE_VERSION}"
+};
+const assert = function(assertion, message) {
+  if (!assertion) {
+    throw assertionError(message);
+  }
+};
+const assertionError = function(message) {
+  return new Error("Firebase Database (" + CONSTANTS.SDK_VERSION + ") INTERNAL ASSERT FAILED: " + message);
+};
 const stringToByteArray$1 = function(str) {
   const out = [];
   let p = 0;
@@ -247,6 +269,39 @@ const base64Decode = function(str) {
   }
   return null;
 };
+function deepCopy(value) {
+  return deepExtend(void 0, value);
+}
+function deepExtend(target, source) {
+  if (!(source instanceof Object)) {
+    return source;
+  }
+  switch (source.constructor) {
+    case Date:
+      const dateValue = source;
+      return new Date(dateValue.getTime());
+    case Object:
+      if (target === void 0) {
+        target = {};
+      }
+      break;
+    case Array:
+      target = [];
+      break;
+    default:
+      return source;
+  }
+  for (const prop in source) {
+    if (!source.hasOwnProperty(prop) || !isValidKey(prop)) {
+      continue;
+    }
+    target[prop] = deepExtend(target[prop], source[prop]);
+  }
+  return target;
+}
+function isValidKey(key) {
+  return key !== "__proto__";
+}
 function getGlobal() {
   if (typeof self !== "undefined") {
     return self;
@@ -415,6 +470,9 @@ function isBrowserExtension() {
 function isReactNative() {
   return typeof navigator === "object" && navigator["product"] === "ReactNative";
 }
+function isNodeSdk() {
+  return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
+}
 function isSafari() {
   return !isNode() && !!navigator.userAgent && navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome");
 }
@@ -485,6 +543,65 @@ function replaceTemplate(template, data) {
   });
 }
 const PATTERN = /\{\$([^}]+)}/g;
+function jsonEval(str) {
+  return JSON.parse(str);
+}
+function stringify(data) {
+  return JSON.stringify(data);
+}
+const decode = function(token) {
+  let header = {}, claims = {}, data = {}, signature = "";
+  try {
+    const parts = token.split(".");
+    header = jsonEval(base64Decode(parts[0]) || "");
+    claims = jsonEval(base64Decode(parts[1]) || "");
+    signature = parts[2];
+    data = claims["d"] || {};
+    delete claims["d"];
+  } catch (e) {
+  }
+  return {
+    header,
+    claims,
+    data,
+    signature
+  };
+};
+const isValidFormat = function(token) {
+  const decoded = decode(token), claims = decoded.claims;
+  return !!claims && typeof claims === "object" && claims.hasOwnProperty("iat");
+};
+const isAdmin = function(token) {
+  const claims = decode(token).claims;
+  return typeof claims === "object" && claims["admin"] === true;
+};
+function contains(obj, key) {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}
+function safeGet(obj, key) {
+  if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    return obj[key];
+  } else {
+    return void 0;
+  }
+}
+function isEmpty(obj) {
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      return false;
+    }
+  }
+  return true;
+}
+function map(obj, fn, contextObj) {
+  const res = {};
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      res[key] = fn.call(contextObj, obj[key], key, obj);
+    }
+  }
+  return res;
+}
 function deepEqual(a, b) {
   if (a === b) {
     return true;
@@ -546,6 +663,162 @@ function extractQuerystring(url) {
   }
   const fragmentStart = url.indexOf("#", queryStart);
   return url.substring(queryStart, fragmentStart > 0 ? fragmentStart : void 0);
+}
+class Sha1 {
+  constructor() {
+    this.chain_ = [];
+    this.buf_ = [];
+    this.W_ = [];
+    this.pad_ = [];
+    this.inbuf_ = 0;
+    this.total_ = 0;
+    this.blockSize = 512 / 8;
+    this.pad_[0] = 128;
+    for (let i = 1; i < this.blockSize; ++i) {
+      this.pad_[i] = 0;
+    }
+    this.reset();
+  }
+  reset() {
+    this.chain_[0] = 1732584193;
+    this.chain_[1] = 4023233417;
+    this.chain_[2] = 2562383102;
+    this.chain_[3] = 271733878;
+    this.chain_[4] = 3285377520;
+    this.inbuf_ = 0;
+    this.total_ = 0;
+  }
+  /**
+   * Internal compress helper function.
+   * @param buf Block to compress.
+   * @param offset Offset of the block in the buffer.
+   * @private
+   */
+  compress_(buf, offset) {
+    if (!offset) {
+      offset = 0;
+    }
+    const W = this.W_;
+    if (typeof buf === "string") {
+      for (let i = 0; i < 16; i++) {
+        W[i] = buf.charCodeAt(offset) << 24 | buf.charCodeAt(offset + 1) << 16 | buf.charCodeAt(offset + 2) << 8 | buf.charCodeAt(offset + 3);
+        offset += 4;
+      }
+    } else {
+      for (let i = 0; i < 16; i++) {
+        W[i] = buf[offset] << 24 | buf[offset + 1] << 16 | buf[offset + 2] << 8 | buf[offset + 3];
+        offset += 4;
+      }
+    }
+    for (let i = 16; i < 80; i++) {
+      const t = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+      W[i] = (t << 1 | t >>> 31) & 4294967295;
+    }
+    let a = this.chain_[0];
+    let b = this.chain_[1];
+    let c = this.chain_[2];
+    let d = this.chain_[3];
+    let e = this.chain_[4];
+    let f, k;
+    for (let i = 0; i < 80; i++) {
+      if (i < 40) {
+        if (i < 20) {
+          f = d ^ b & (c ^ d);
+          k = 1518500249;
+        } else {
+          f = b ^ c ^ d;
+          k = 1859775393;
+        }
+      } else {
+        if (i < 60) {
+          f = b & c | d & (b | c);
+          k = 2400959708;
+        } else {
+          f = b ^ c ^ d;
+          k = 3395469782;
+        }
+      }
+      const t = (a << 5 | a >>> 27) + f + e + k + W[i] & 4294967295;
+      e = d;
+      d = c;
+      c = (b << 30 | b >>> 2) & 4294967295;
+      b = a;
+      a = t;
+    }
+    this.chain_[0] = this.chain_[0] + a & 4294967295;
+    this.chain_[1] = this.chain_[1] + b & 4294967295;
+    this.chain_[2] = this.chain_[2] + c & 4294967295;
+    this.chain_[3] = this.chain_[3] + d & 4294967295;
+    this.chain_[4] = this.chain_[4] + e & 4294967295;
+  }
+  update(bytes, length) {
+    if (bytes == null) {
+      return;
+    }
+    if (length === void 0) {
+      length = bytes.length;
+    }
+    const lengthMinusBlock = length - this.blockSize;
+    let n = 0;
+    const buf = this.buf_;
+    let inbuf = this.inbuf_;
+    while (n < length) {
+      if (inbuf === 0) {
+        while (n <= lengthMinusBlock) {
+          this.compress_(bytes, n);
+          n += this.blockSize;
+        }
+      }
+      if (typeof bytes === "string") {
+        while (n < length) {
+          buf[inbuf] = bytes.charCodeAt(n);
+          ++inbuf;
+          ++n;
+          if (inbuf === this.blockSize) {
+            this.compress_(buf);
+            inbuf = 0;
+            break;
+          }
+        }
+      } else {
+        while (n < length) {
+          buf[inbuf] = bytes[n];
+          ++inbuf;
+          ++n;
+          if (inbuf === this.blockSize) {
+            this.compress_(buf);
+            inbuf = 0;
+            break;
+          }
+        }
+      }
+    }
+    this.inbuf_ = inbuf;
+    this.total_ += length;
+  }
+  /** @override */
+  digest() {
+    const digest = [];
+    let totalBits = this.total_ * 8;
+    if (this.inbuf_ < 56) {
+      this.update(this.pad_, 56 - this.inbuf_);
+    } else {
+      this.update(this.pad_, this.blockSize - (this.inbuf_ - 56));
+    }
+    for (let i = this.blockSize - 1; i >= 56; i--) {
+      this.buf_[i] = totalBits & 255;
+      totalBits /= 256;
+    }
+    this.compress_(this.buf_);
+    let n = 0;
+    for (let i = 0; i < 5; i++) {
+      for (let j = 24; j >= 0; j -= 8) {
+        digest[n] = this.chain_[i] >> j & 255;
+        ++n;
+      }
+    }
+    return digest;
+  }
 }
 function createSubscribe(executor, onNoObservers) {
   const proxy = new ObserverProxy(executor, onNoObservers);
@@ -700,6 +973,56 @@ function implementsAnyMethods(obj, methods) {
 }
 function noop() {
 }
+function errorPrefix(fnName, argName) {
+  return `${fnName} failed: ${argName} argument `;
+}
+const stringToByteArray = function(str) {
+  const out = [];
+  let p = 0;
+  for (let i = 0; i < str.length; i++) {
+    let c = str.charCodeAt(i);
+    if (c >= 55296 && c <= 56319) {
+      const high = c - 55296;
+      i++;
+      assert(i < str.length, "Surrogate pair missing trail surrogate.");
+      const low = str.charCodeAt(i) - 56320;
+      c = 65536 + (high << 10) + low;
+    }
+    if (c < 128) {
+      out[p++] = c;
+    } else if (c < 2048) {
+      out[p++] = c >> 6 | 192;
+      out[p++] = c & 63 | 128;
+    } else if (c < 65536) {
+      out[p++] = c >> 12 | 224;
+      out[p++] = c >> 6 & 63 | 128;
+      out[p++] = c & 63 | 128;
+    } else {
+      out[p++] = c >> 18 | 240;
+      out[p++] = c >> 12 & 63 | 128;
+      out[p++] = c >> 6 & 63 | 128;
+      out[p++] = c & 63 | 128;
+    }
+  }
+  return out;
+};
+const stringLength = function(str) {
+  let p = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    if (c < 128) {
+      p++;
+    } else if (c < 2048) {
+      p += 2;
+    } else if (c >= 55296 && c <= 56319) {
+      p += 4;
+      i++;
+    } else {
+      p += 3;
+    }
+  }
+  return p;
+};
 function getModularInstance(service) {
   if (service && service._delegate) {
     return service._delegate;
@@ -721,10 +1044,25 @@ async function pingServer(endpoint) {
   });
   return result.ok;
 }
+CONSTANTS.NODE_CLIENT = true;
 export {
+  safeGet as A,
+  contains as B,
+  map as C,
   Deferred as D,
   ErrorFactory as E,
   FirebaseError as F,
+  stringToByteArray as G,
+  base64 as H,
+  assertionError as I,
+  jsonEval as J,
+  isNodeSdk as K,
+  isAdmin as L,
+  isValidFormat as M,
+  isEmpty as N,
+  deepCopy as O,
+  base64Encode as P,
+  Sha1 as S,
   getModularInstance as a,
   base64urlEncodeWithoutPadding as b,
   getDefaultEmulatorHost as c,
@@ -746,5 +1084,9 @@ export {
   getDefaultEmulatorHostnameAndPort as s,
   createMockUserToken as t,
   isSafari as u,
-  validateIndexedDBOpenable as v
+  validateIndexedDBOpenable as v,
+  errorPrefix as w,
+  assert as x,
+  stringLength as y,
+  stringify as z
 };

@@ -1,0 +1,28 @@
+import { e as useNavigate } from "../_libs/tanstack__react-router.mjs";
+import { r as reactExports } from "../_libs/react.mjs";
+import "../_libs/tanstack__router-core.mjs";
+import "../_libs/tanstack__history.mjs";
+import "../_libs/cookie-es.mjs";
+import "../_libs/seroval.mjs";
+import "../_libs/seroval-plugins.mjs";
+import "node:stream/web";
+import "node:stream";
+import "../_libs/react-dom.mjs";
+import "async_hooks";
+import "stream";
+import "util";
+import "crypto";
+import "../_libs/isbot.mjs";
+function EcosystemRedirect() {
+  const navigate = useNavigate();
+  reactExports.useEffect(() => {
+    void navigate({
+      to: "/school",
+      replace: true
+    });
+  }, [navigate]);
+  return null;
+}
+export {
+  EcosystemRedirect as component
+};

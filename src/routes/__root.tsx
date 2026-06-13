@@ -160,7 +160,7 @@ function IntroSplash() {
         <div className="max-w-2xl space-y-5">
           <img src="/assets/e-pathshala-logo.png" alt="E-পাঠশালা" className="mx-auto h-28 w-28 rounded-[2rem] object-cover bg-white shadow-glow backdrop-blur-md animate-pulse-glow" />
           <p className="text-sm uppercase tracking-[0.4em] opacity-80">Created & Developed by</p>
-          <h1 className="text-3xl md:text-5xl font-bold animate-float">Fardin Hasan and his team</h1>
+          <h1 className="text-3xl md:text-5xl font-bold animate-float">Kachua Govt pilot High School Team</h1>
           <p className="text-xl md:text-2xl font-semibold opacity-95">Kachua Govt Pilot High School</p>
           <p className="text-sm md:text-base opacity-80">বাংলা-প্রথম শিক্ষালয় · ক্লাস · PDF · লাইভ ক্লাস · কুইজ · গেম</p>
         </div>

@@ -1,6 +1,8 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { browserLocalPersistence, getAuth, GoogleAuthProvider, setPersistence, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
+import { getDatabase, type Database } from "firebase/database";
+import { getFunctions, type Functions } from "firebase/functions";
 
 type FirebaseEnv = {
   VITE_FIREBASE_API_KEY?: string;
@@ -36,6 +38,8 @@ export const firebaseEnabled = Boolean(
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let db: Firestore | null = null;
+let rtdb: Database | null = null;
+let functions: Functions | null = null;
 let googleProvider: GoogleAuthProvider | null = null;
 
 export function getFirebaseApp() {
@@ -63,6 +67,24 @@ export function getFirebaseDb() {
     db = getFirestore(firebaseApp);
   }
   return db;
+}
+
+export function getFirebaseRtdb() {
+  const firebaseApp = getFirebaseApp();
+  if (!firebaseApp) return null;
+  if (!rtdb) {
+    rtdb = getDatabase(firebaseApp);
+  }
+  return rtdb;
+}
+
+export function getFirebaseFunctions() {
+  const firebaseApp = getFirebaseApp();
+  if (!firebaseApp) return null;
+  if (!functions) {
+    functions = getFunctions(firebaseApp);
+  }
+  return functions;
 }
 
 export function getGoogleProvider() {

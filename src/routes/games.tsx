@@ -1,5 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, CheckCircle2, ChevronRight, Clock3, Maximize2, RotateCcw, ShieldCheck, Sparkles, Trophy, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Award,
+  CheckCircle2,
+  ChevronRight,
+  Clock3,
+  Maximize2,
+  RotateCcw,
+  ShieldCheck,
+  Sparkles,
+  Trophy,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AppShell } from "@/components/layout/AppShell";
@@ -23,7 +36,7 @@ const SUBJECTS = [
 
 type SubjectFilter = (typeof SUBJECTS)[number]["value"];
 
-function Games() {
+export function Games() {
   const auth = useAuth();
   const user = useUser();
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -103,7 +116,12 @@ function Games() {
     void saveQuizCompletion(percent, score, questions.length, streakBonus);
   }, [correctCount, finished, questions.length, score]);
 
-  async function saveQuizCompletion(percent: number, finalScore: number, total: number, streakBonus: number) {
+  async function saveQuizCompletion(
+    percent: number,
+    finalScore: number,
+    total: number,
+    streakBonus: number,
+  ) {
     const subjectLabel = selectedSubject === "all" ? "Mixed subject" : selectedSubject;
     await saveQuizScore({
       userId: auth.profile.uid,
@@ -159,7 +177,11 @@ function Games() {
     if (!question || selectedAnswer !== null || finished) return;
     const correct = choice === question.answer;
     const nextQuestions = questions.slice();
-    nextQuestions[index] = { ...question, __correct: true, __answeredCorrect: correct } as typeof question & {
+    nextQuestions[index] = {
+      ...question,
+      __correct: true,
+      __answeredCorrect: correct,
+    } as typeof question & {
       __correct?: boolean;
       __answeredCorrect?: boolean;
     };
@@ -167,7 +189,9 @@ function Games() {
     setSelectedAnswer(choice);
     setFeedback({
       correct,
-      text: correct ? "দারুণ! তুমি সঠিক উত্তর দিয়েছ।" : `সঠিক উত্তর: ${question.options[question.answer]}`,
+      text: correct
+        ? "দারুণ! তুমি সঠিক উত্তর দিয়েছ।"
+        : `সঠিক উত্তর: ${question.options[question.answer]}`,
     });
     playSound(correct);
 
@@ -219,9 +243,12 @@ function Games() {
                 <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold tracking-[0.2em] uppercase">
                   <Sparkles className="h-3.5 w-3.5 text-brand-orange" /> fullscreen quiz arena
                 </div>
-                <h1 className="mt-3 text-3xl md:text-5xl font-bold leading-tight">Bangladesh curriculum game mode</h1>
+                <h1 className="mt-3 text-3xl md:text-5xl font-bold leading-tight">
+                  Bangladesh curriculum quiz mode
+                </h1>
                 <p className="mt-2 max-w-3xl text-sm md:text-base text-muted-foreground">
-                  প্রতি প্রশ্নে সময়সীমা আছে, answer feedback instant, score save হয় Firebase-এ, আর high score হলে certificate auto-generate হয়।
+                  প্রতি প্রশ্নে সময়সীমা আছে, answer feedback instant, score save হয় Firebase-এ, আর
+                  high score হলে certificate auto-generate হয়।
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -247,17 +274,41 @@ function Games() {
             <div className="grid gap-3 md:grid-cols-4">
               <Stat icon={<Clock3 className="h-4 w-4" />} label="Timer" value={`${secondsLeft}s`} />
               <Stat icon={<Trophy className="h-4 w-4" />} label="Score" value={score.toString()} />
-              <Stat icon={<CheckCircle2 className="h-4 w-4" />} label="Accuracy" value={`${percent}%`} />
-              <Stat icon={<Zap className="h-4 w-4" />} label="Streak" value={`${Math.max(0, correctCount - 1)}`} />
+              <Stat
+                icon={<CheckCircle2 className="h-4 w-4" />}
+                label="Accuracy"
+                value={`${percent}%`}
+              />
+              <Stat
+                icon={<Zap className="h-4 w-4" />}
+                label="Streak"
+                value={`${Math.max(0, correctCount - 1)}`}
+              />
             </div>
           </header>
 
           <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="glass-strong rounded-[2rem] p-5 md:p-6 space-y-5">
               <div className="grid gap-4 md:grid-cols-3">
-                <Control label="Class" value={selectedClass.toString()} onChange={(value) => setSelectedClass(Number(value))} options={Array.from({ length: 10 }, (_, idx) => `${idx + 1}`)} />
-                <Control label="Subject" value={selectedSubject} onChange={(value) => setSelectedSubject(value as SubjectFilter)} options={SUBJECTS.map((item) => item.value)} optionsLabel={SUBJECTS.map((item) => item.label)} />
-                <Control label="Questions" value={questionCount.toString()} onChange={(value) => setQuestionCount(Number(value))} options={["5", "10", "15", "20"]} />
+                <Control
+                  label="Class"
+                  value={selectedClass.toString()}
+                  onChange={(value) => setSelectedClass(Number(value))}
+                  options={Array.from({ length: 10 }, (_, idx) => `${idx + 1}`)}
+                />
+                <Control
+                  label="Subject"
+                  value={selectedSubject}
+                  onChange={(value) => setSelectedSubject(value as SubjectFilter)}
+                  options={SUBJECTS.map((item) => item.value)}
+                  optionsLabel={SUBJECTS.map((item) => item.label)}
+                />
+                <Control
+                  label="Questions"
+                  value={questionCount.toString()}
+                  onChange={(value) => setQuestionCount(Number(value))}
+                  options={["5", "10", "15", "20"]}
+                />
               </div>
 
               <div className="grid md:grid-cols-[1fr_auto] items-center gap-3 rounded-3xl bg-muted/50 p-4">
@@ -265,16 +316,27 @@ function Games() {
                   <div className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
                     Question {index + 1} / {questions.length}
                   </div>
-                  <h2 className="mt-1 text-xl md:text-3xl font-bold leading-tight">{question?.prompt ?? "No question"}</h2>
+                  <h2 className="mt-1 text-xl md:text-3xl font-bold leading-tight">
+                    {question?.prompt ?? "No question"}
+                  </h2>
                 </div>
-                <button type="button" onClick={restart} className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 font-semibold hover:bg-muted/70">
+                <button
+                  type="button"
+                  onClick={restart}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 font-semibold hover:bg-muted/70"
+                >
                   <RotateCcw className="h-4 w-4" />
                   Restart
                 </button>
               </div>
 
               <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-gradient-hero transition-all" style={{ width: `${questions.length ? ((index + 1) / questions.length) * 100 : 0}%` }} />
+                <div
+                  className="h-full rounded-full bg-gradient-hero transition-all"
+                  style={{
+                    width: `${questions.length ? ((index + 1) / questions.length) * 100 : 0}%`,
+                  }}
+                />
               </div>
 
               <div className="space-y-3">
@@ -298,7 +360,9 @@ function Games() {
                     >
                       <div className="flex items-center justify-between gap-3">
                         <span className="font-medium">{option}</span>
-                        {reveal && isCorrect ? <CheckCircle2 className="h-5 w-5 text-brand-green" /> : null}
+                        {reveal && isCorrect ? (
+                          <CheckCircle2 className="h-5 w-5 text-brand-green" />
+                        ) : null}
                       </div>
                     </button>
                   );
@@ -306,14 +370,18 @@ function Games() {
               </div>
 
               {feedback ? (
-                <div className={`rounded-2xl p-4 text-sm ${feedback.correct ? "bg-brand-green/10" : "bg-destructive/10"}`}>
+                <div
+                  className={`rounded-2xl p-4 text-sm ${feedback.correct ? "bg-brand-green/10" : "bg-destructive/10"}`}
+                >
                   <strong>{feedback.correct ? "Correct" : "Try again"}:</strong> {feedback.text}
                 </div>
               ) : null}
 
               <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-brand-orange" />
-                <span>Time limit per question is mandatory. Auto-next runs when the timer ends.</span>
+                <span>
+                  Time limit per question is mandatory. Auto-next runs when the timer ends.
+                </span>
               </div>
             </div>
 
@@ -321,7 +389,9 @@ function Games() {
               <div className="glass rounded-[2rem] p-5">
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <h3 className="font-bold">Game rules</h3>
-                  <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold">{selectedClass}</span>
+                  <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold">
+                    {selectedClass}
+                  </span>
                 </div>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li>• 10–30 second timers, based on your setting.</li>
@@ -358,17 +428,26 @@ function Games() {
                   </div>
                   <div className="flex items-center justify-between gap-3">
                     <span>Audio feedback</span>
-                    <button type="button" onClick={() => setAudioEnabled((current) => !current)} className="rounded-full bg-muted px-3 py-1.5 font-medium">
+                    <button
+                      type="button"
+                      onClick={() => setAudioEnabled((current) => !current)}
+                      className="rounded-full bg-muted px-3 py-1.5 font-medium"
+                    >
                       {audioEnabled ? "Enabled" : "Disabled"}
                     </button>
                   </div>
                 </div>
               </div>
 
-              <Link to="/certificates" className="glass rounded-[2rem] p-5 flex items-center justify-between gap-3 hover:shadow-soft transition-all">
+              <Link
+                to="/certificates"
+                className="glass rounded-[2rem] p-5 flex items-center justify-between gap-3 hover:shadow-soft transition-all"
+              >
                 <div>
                   <div className="font-bold">Achievement certificates</div>
-                  <div className="text-sm text-muted-foreground">View generated certificates and download as PDF.</div>
+                  <div className="text-sm text-muted-foreground">
+                    View generated certificates and download as PDF.
+                  </div>
                 </div>
                 <Award className="h-5 w-5 text-primary" />
               </Link>
@@ -394,15 +473,25 @@ function Games() {
               <div className="grid gap-4 md:grid-cols-3">
                 <ResultCard label="Accuracy" value={`${percent}%`} />
                 <ResultCard label="Correct answers" value={`${correctCount}/${questions.length}`} />
-                <ResultCard label="Firebase" value={auth.firebaseReady ? "Enabled" : "Local demo"} />
+                <ResultCard
+                  label="Firebase"
+                  value={auth.firebaseReady ? "Enabled" : "Local demo"}
+                />
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <button type="button" onClick={restart} className="inline-flex items-center gap-2 rounded-2xl bg-gradient-hero px-4 py-3 font-semibold text-white shadow-soft">
+                <button
+                  type="button"
+                  onClick={restart}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-hero px-4 py-3 font-semibold text-white shadow-soft"
+                >
                   <RotateCcw className="h-4 w-4" />
                   Play again
                 </button>
-                <Link to="/certificates" className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 font-semibold hover:bg-muted/70">
+                <Link
+                  to="/certificates"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 font-semibold hover:bg-muted/70"
+                >
                   <Award className="h-4 w-4" />
                   Open certificates
                 </Link>
@@ -416,8 +505,13 @@ function Games() {
 }
 
 function buildQuestions(classLevel: number, subject: SubjectFilter, count: number) {
-  const filtered = quizBank.filter((question) => question.classLevel === classLevel && (subject === "all" || question.subject === subject));
-  const pool = filtered.length ? filtered : quizBank.filter((question) => question.classLevel === classLevel);
+  const filtered = quizBank.filter(
+    (question) =>
+      question.classLevel === classLevel && (subject === "all" || question.subject === subject),
+  );
+  const pool = filtered.length
+    ? filtered
+    : quizBank.filter((question) => question.classLevel === classLevel);
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, Math.min(count, shuffled.length));
 }
@@ -482,4 +576,3 @@ function Control({
     </label>
   );
 }
-

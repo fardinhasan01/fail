@@ -6,10 +6,10 @@ import require$$0$3 from "net";
 import require$$0$4 from "events";
 import require$$0$6 from "http2";
 import require$$3 from "http";
-import require$$7 from "url";
-import require$$1$1 from "dns";
+import require$$2 from "url";
+import require$$1$2 from "dns";
 import require$$0$7 from "zlib";
-import require$$5 from "stream";
+import require$$1$1 from "stream";
 import { r as requireSrc$1 } from "./proto-loader.mjs";
 import require$$0$5 from "util";
 var src = {};
@@ -1967,7 +1967,7 @@ function requireCall() {
   call.ClientDuplexStreamImpl = call.ClientWritableStreamImpl = call.ClientReadableStreamImpl = call.ClientUnaryCallImpl = void 0;
   call.callErrorFromStatus = callErrorFromStatus;
   const events_1 = require$$0$4;
-  const stream_1 = require$$5;
+  const stream_1 = require$$1$1;
   const constants_1 = requireConstants();
   function callErrorFromStatus(status, callerStack) {
     const message = `${status.code} ${constants_1.Status[status.code]}: ${status.details}`;
@@ -3826,7 +3826,7 @@ function requireResolverDns() {
     exports.DEFAULT_PORT = void 0;
     exports.setup = setup;
     const resolver_1 = requireResolver();
-    const dns = require$$1$1;
+    const dns = require$$1$2;
     const util = require$$0$5;
     const service_config_1 = requireServiceConfig();
     const constants_1 = requireConstants();
@@ -4086,7 +4086,7 @@ function requireHttp_proxy() {
   const logging2 = requireLogging();
   const subchannel_address_1 = requireSubchannelAddress();
   const uri_parser_1 = requireUriParser();
-  const url_1 = require$$7;
+  const url_1 = require$$2;
   const resolver_dns_1 = requireResolverDns();
   const TRACER_NAME = "proxy";
   function trace(text) {
@@ -7355,7 +7355,7 @@ function requireServerCall() {
   serverCall.Http2ServerCallStream = serverCall.ServerDuplexStreamImpl = serverCall.ServerWritableStreamImpl = serverCall.ServerReadableStreamImpl = serverCall.ServerUnaryCallImpl = void 0;
   const events_1 = require$$0$4;
   const http2 = require$$0$6;
-  const stream_1 = require$$5;
+  const stream_1 = require$$1$1;
   const zlib = require$$0$7;
   const constants_1 = requireConstants();
   const metadata_1 = requireMetadata();

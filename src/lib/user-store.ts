@@ -40,6 +40,10 @@ export interface UserState {
   name: string;
   class: number;
   role: UserRole;
+  schoolId: string | null;
+  schoolCode: string | null;
+  schoolName: string | null;
+  studentId: string | null;
   avatar: string;
   xp: number;
   coins: number;
@@ -73,6 +77,10 @@ const DEFAULT_PROFILE: UserState = {
   name: "Aarav",
   class: 3,
   role: "student",
+  schoolId: "school-drmc",
+  schoolCode: "EP-2026-001245",
+  schoolName: "Dhaka Residential Model College",
+  studentId: "EP-STU-260001",
   avatar: "🦊",
   xp: 1280,
   coins: 245,
@@ -145,6 +153,10 @@ function profileFromSnapshot(uid: string, email: string, data: DocumentData | un
     name,
     class: normalizeNumber(data?.class, DEFAULT_PROFILE.class),
     role: normalizeRole(data?.role),
+    schoolId: normalizeString(data?.schoolId, DEFAULT_PROFILE.schoolId ?? ""),
+    schoolCode: normalizeString(data?.schoolCode, DEFAULT_PROFILE.schoolCode ?? ""),
+    schoolName: normalizeString(data?.schoolName, DEFAULT_PROFILE.schoolName ?? ""),
+    studentId: normalizeString(data?.studentId, DEFAULT_PROFILE.studentId ?? ""),
     avatar: sanitizeAvatar(data?.avatar, avatarForRole(normalizeRole(data?.role)), name),
     xp: normalizeNumber(data?.xp, DEFAULT_PROFILE.xp),
     coins: normalizeNumber(data?.coins, DEFAULT_PROFILE.coins),
@@ -169,6 +181,10 @@ function profileFromFirebaseUser(user: FirebaseUser, payload?: Partial<UserState
     avatar: sanitizeAvatar(payload?.avatar ?? user.photoURL, avatarForRole(payload?.role ?? "student"), name),
     class: payload?.class ?? DEFAULT_PROFILE.class,
     role: payload?.role ?? "student",
+    schoolId: payload?.schoolId ?? DEFAULT_PROFILE.schoolId,
+    schoolCode: payload?.schoolCode ?? DEFAULT_PROFILE.schoolCode,
+    schoolName: payload?.schoolName ?? DEFAULT_PROFILE.schoolName,
+    studentId: payload?.studentId ?? DEFAULT_PROFILE.studentId,
     xp: payload?.xp ?? DEFAULT_PROFILE.xp,
     coins: payload?.coins ?? DEFAULT_PROFILE.coins,
     streak: payload?.streak ?? DEFAULT_PROFILE.streak,
@@ -187,15 +203,19 @@ async function upsertFirebaseProfile(user: FirebaseUser, patch: Partial<UserStat
   if (!db) return;
   const ref = doc(db, "users", user.uid);
   const base = profileFromFirebaseUser(user, patch);
-  await setDoc(
-    ref,
-    {
-      uid: user.uid,
-      email: user.email ?? "",
-      name: base.name,
-      class: base.class,
-      role: base.role,
-      avatar: base.avatar,
+      await setDoc(
+        ref,
+        {
+          uid: user.uid,
+          email: user.email ?? "",
+          name: base.name,
+          class: base.class,
+          role: base.role,
+          schoolId: base.schoolId,
+          schoolCode: base.schoolCode,
+          schoolName: base.schoolName,
+          studentId: base.studentId,
+          avatar: base.avatar,
       xp: base.xp,
       coins: base.coins,
       streak: base.streak,
