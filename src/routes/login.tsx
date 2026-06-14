@@ -251,7 +251,8 @@ function Login() {
           </form>
 
           <p className="mt-5 text-xs leading-6 text-muted-foreground">
-            This login is now wired directly to Firebase. Make sure your `VITE_FIREBASE_*` env vars are set and Firebase Email/Password auth is enabled in the console.
+            Firebase is used when configured, and a local demo login is available when it is not.
+            For school-specific data, keep using “Kachua Govt. Pilot High School”.
           </p>
         </div>
       </section>

@@ -369,7 +369,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <footer className="fixed left-1/2 -translate-x-1/2 bottom-20 lg:bottom-4 z-30 pointer-events-none">
         <div className="pointer-events-auto glass-strong px-4 py-2 rounded-full text-[11px] md:text-xs text-muted-foreground shadow-soft text-center">
-          Created &amp; Developed by Kachua Govt Pilot High School Team, E-পাঠশালা, The learning
+          Created &amp; Developed by Kachua Govt. Pilot High School Team, E-পাঠশালা, The learning
           platform.
         </div>
       </footer>

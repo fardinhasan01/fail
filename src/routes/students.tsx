@@ -382,7 +382,7 @@ function DigitalCard({ student }: { student: StudentRecord | null }) {
   const preview: StudentRecord = student ?? {
     studentId: "EP-STU-000000",
     fullName: "Student Name",
-    schoolName: "Kachua Govt Pilot High School",
+    schoolName: "Kachua Govt. Pilot High School",
     classLevel: 8,
     section: "A",
     roll: "14",
@@ -559,7 +559,7 @@ function isImageData(value: string) {
 }
 
 function normalizeSchoolName(name: string) {
-  return /dhaka\s+residential/i.test(name) ? "Kachua Govt Pilot High School" : name;
+  return /dhaka\s+residential/i.test(name) ? "Kachua Govt. Pilot High School" : name;
 }
 
 function renderIdCardHtml(student: StudentRecord, qr: string, verificationUrl: string) {

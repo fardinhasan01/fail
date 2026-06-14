@@ -106,6 +106,8 @@ const DEFAULT_PROFILE: UserState = {
   lastSeen: Date.now(),
 };
 
+const LOCAL_AUTH_STORAGE_KEY = "epathshala:auth:local-profile";
+
 const AuthContext = createContext<AuthSession | null>(null);
 
 function computeLevel(xp: number) {
@@ -156,6 +158,67 @@ function createFallbackProfile(overrides: Partial<UserState> = {}): UserState {
   profile.badges = profile.badges.length ? profile.badges : DEFAULT_PROFILE.badges;
   profile.avatar = profile.avatar || avatarForRole(profile.role);
   return profile;
+}
+
+function isBrowser() {
+  return typeof window !== "undefined";
+}
+
+function readLocalProfile(): UserState | null {
+  if (!isBrowser()) return null;
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_AUTH_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<UserState>;
+    return createFallbackProfile({
+      ...parsed,
+      schoolName: parsed.schoolName ?? DEFAULT_PROFILE.schoolName,
+    });
+  } catch {
+    return null;
+  }
+}
+
+function saveLocalProfile(profile: UserState) {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(LOCAL_AUTH_STORAGE_KEY, JSON.stringify(profile));
+}
+
+function clearLocalProfile() {
+  if (!isBrowser()) return;
+  window.localStorage.removeItem(LOCAL_AUTH_STORAGE_KEY);
+}
+
+function createLocalAuthUser(profile: UserState): FirebaseUser {
+  return {
+    uid: profile.uid,
+    email: profile.email,
+    displayName: profile.name,
+    photoURL: profile.avatar,
+    emailVerified: true,
+    isAnonymous: false,
+    providerId: "local",
+    metadata: {
+      creationTime: new Date(profile.lastSeen).toISOString(),
+      lastSignInTime: new Date(profile.lastSeen).toISOString(),
+    },
+    providerData: [],
+    refreshToken: "",
+    tenantId: null,
+    delete: async () => {},
+    getIdToken: async () => "",
+    getIdTokenResult: async () => ({}) as never,
+    reload: async () => {},
+    toJSON: () => ({ uid: profile.uid, email: profile.email, displayName: profile.name }),
+  } as unknown as FirebaseUser;
+}
+
+function seedLocalSession(profile: UserState, setAuthUser: (user: FirebaseUser | null) => void) {
+  const nextProfile = createFallbackProfile(profile);
+  saveLocalProfile(nextProfile);
+  setAuthUser(createLocalAuthUser(nextProfile));
+  return nextProfile;
 }
 
 function profileFromSnapshot(
@@ -265,8 +328,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!firebaseEnabled) {
-      setAuthUser(null);
-      setProfile(DEFAULT_PROFILE);
+      const localProfile = readLocalProfile();
+      if (localProfile) {
+        setAuthUser(createLocalAuthUser(localProfile));
+        setProfile(localProfile);
+      } else {
+        setAuthUser(null);
+        setProfile(DEFAULT_PROFILE);
+      }
       setLoading(false);
       return;
     }
@@ -354,14 +423,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authUser,
       profile,
       signInWithEmail: async (email, password) => {
-        if (!firebaseEnabled) throw new Error("Firebase is not configured.");
+        if (!firebaseEnabled) {
+          const next = seedLocalSession(
+            {
+              ...DEFAULT_PROFILE,
+              uid: `local-${email.trim().toLowerCase() || "student"}`,
+              email: email.trim(),
+              name: email.split("@")[0] || DEFAULT_PROFILE.name,
+            },
+            setAuthUser,
+          );
+          setProfile(next);
+          return;
+        }
 
         const auth = getFirebaseAuth();
         if (!auth) throw new Error("Firebase Authentication is not available.");
         await signInWithEmailAndPassword(auth, email, password);
       },
       signUpWithEmail: async ({ email, password, name, classLevel, role }) => {
-        if (!firebaseEnabled) throw new Error("Firebase is not configured.");
+        if (!firebaseEnabled) {
+          const next = seedLocalSession(
+            {
+              ...DEFAULT_PROFILE,
+              uid: `local-${email.trim().toLowerCase() || "student"}`,
+              email: email.trim(),
+              name,
+              class: classLevel,
+              role,
+              avatar: avatarForRole(role),
+            },
+            setAuthUser,
+          );
+          setProfile(next);
+          return;
+        }
 
         const auth = getFirebaseAuth();
         if (!auth) throw new Error("Firebase Authentication is not available.");
@@ -376,7 +472,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await updateFirebaseProfile(result.user, { displayName: name }).catch(() => {});
       },
       signInWithGoogle: async () => {
-        if (!firebaseEnabled) throw new Error("Firebase is not configured.");
+        if (!firebaseEnabled) {
+          const localName = DEFAULT_PROFILE.name;
+          const next = seedLocalSession(
+            {
+              ...DEFAULT_PROFILE,
+              uid: "local-google-user",
+              email: "student@e-pathshala.local",
+              name: localName,
+              avatar: "🌟",
+            },
+            setAuthUser,
+          );
+          setProfile(next);
+          return;
+        }
 
         const auth = getFirebaseAuth();
         if (!auth) throw new Error("Firebase Authentication is not available.");
@@ -388,7 +498,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       },
       signOut: async () => {
-        if (!firebaseEnabled) throw new Error("Firebase is not configured.");
+        if (!firebaseEnabled) {
+          clearLocalProfile();
+          setAuthUser(null);
+          setProfile(DEFAULT_PROFILE);
+          return;
+        }
 
         const auth = getFirebaseAuth();
         if (!auth) throw new Error("Firebase Authentication is not available.");
@@ -398,7 +513,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const nextProfile = createFallbackProfile({ ...profile, ...patch });
         setProfile(nextProfile);
 
-        if (!firebaseEnabled) throw new Error("Firebase is not configured.");
+        if (!firebaseEnabled) {
+          saveLocalProfile(nextProfile);
+          return;
+        }
 
         if (!authUser) return;
         const db = getFirebaseDb();
@@ -422,7 +540,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         setProfile(next);
 
-        if (!firebaseEnabled) throw new Error("Firebase is not configured.");
+        if (!firebaseEnabled) {
+          saveLocalProfile(next);
+          return;
+        }
 
         if (!authUser) return;
         const db = getFirebaseDb();
@@ -503,23 +624,34 @@ export async function followUser(targetUid: string) {
 
 export async function saveLocalProfilePatch(patch: Partial<UserState>) {
   if (firebaseEnabled) return;
-  throw new Error("Firebase is not configured.");
+  const next = createFallbackProfile({ ...(readLocalProfile() ?? DEFAULT_PROFILE), ...patch });
+  saveLocalProfile(next);
 }
 
 export async function awardXp(amount: number, coins = 0) {
-  if (!firebaseEnabled) throw new Error("Firebase is not configured.");
+  if (!firebaseEnabled) {
+    const current = readLocalProfile() ?? DEFAULT_PROFILE;
+    const next = createFallbackProfile({
+      ...current,
+      xp: current.xp + amount,
+      coins: current.coins + coins,
+    });
+    saveLocalProfile(next);
+    return;
+  }
 
   const auth = getFirebaseAuth();
   const db = getFirebaseDb();
   if (!auth?.currentUser || !db) return;
-  const ref = doc(db, "users", auth.currentUser.uid);
+  const currentUser = auth.currentUser;
+  const ref = doc(db, "users", currentUser.uid);
   const snapshot = await getDoc(ref);
   const current = snapshot.data();
   const next = createFallbackProfile({
     ...profileFromFirebaseUser(
-      auth.currentUser,
+      currentUser,
       current
-        ? profileFromSnapshot(auth.currentUser.uid, auth.currentUser.email ?? "", current)
+        ? profileFromSnapshot(currentUser.uid, currentUser.email ?? "", current)
         : undefined,
     ),
     xp: normalizeNumber(current?.xp, DEFAULT_PROFILE.xp) + amount,
@@ -532,6 +664,6 @@ export async function awardXp(amount: number, coins = 0) {
     level: next.level,
     lastSeen: serverTimestamp(),
   }).catch(async () => {
-    await upsertFirebaseProfile(auth.currentUser, next);
+    await upsertFirebaseProfile(currentUser, next);
   });
 }

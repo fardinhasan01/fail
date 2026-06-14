@@ -106,12 +106,16 @@ function SupportAi() {
     await submitQuestion();
   }
 
-  function applyPrompt(prompt: string) {
+  async function applyPrompt(prompt: string) {
+    if (isBusy) return;
     setDraft(prompt);
     setNeuralLogs((prev) => [
       ...prev.slice(-6),
       `Quick query loaded: "${prompt.substring(0, 20)}..."`,
     ]);
+    await chat.sendMessage({ text: prompt });
+    setDraft("");
+    setNeuralLogs((prev) => [...prev.slice(-6), "Synaptic response synced successfully."]);
   }
 
   function extractText(message: UIMessage) {
@@ -330,7 +334,7 @@ function SupportAi() {
                     <button
                       key={prompt}
                       type="button"
-                      onClick={() => applyPrompt(prompt)}
+                      onClick={() => void applyPrompt(prompt)}
                       className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-left text-xs font-bold text-slate-700 hover:text-amber-700 hover:border-amber-400 hover:bg-amber-50/40 transition-all cursor-pointer shadow-sm"
                     >
                       {prompt}

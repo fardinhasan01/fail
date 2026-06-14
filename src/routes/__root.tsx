@@ -177,10 +177,10 @@ function IntroSplash() {
                 Created & Developed by
               </div>
               <h1 className="mt-4 text-3xl font-black leading-tight md:text-5xl">
-                Kachua Govt pilot High School Team
+                Kachua Govt. Pilot High School Team
               </h1>
               <p className="mt-2 text-base font-medium text-white/85 md:text-lg">
-                Kachua Govt Pilot High School
+                Kachua Govt. Pilot High School
               </p>
             </div>
           </div>
