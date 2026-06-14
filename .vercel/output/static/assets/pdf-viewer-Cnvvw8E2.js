@@ -1,1 +1,0 @@
-import{j as e,A as t}from"./index-CPKYwynN.js";const s=()=>e.jsx(t,{children:e.jsxs("div",{className:"px-4 py-10 max-w-2xl mx-auto text-center",children:[e.jsx("h1",{className:"text-3xl font-bold",children:"No PDF selected"}),e.jsx("p",{className:"mt-2 text-muted-foreground",children:"Open a subject PDF from the curriculum page first."})]})});export{s as notFoundComponent};

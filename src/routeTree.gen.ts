@@ -13,7 +13,7 @@ import { Route as SubjectsRouteImport } from './routes/subjects'
 import { Route as StudentsRouteImport } from './routes/students'
 import { Route as StudentHealthRouteImport } from './routes/student-health'
 import { Route as SpecialGameRouteImport } from './routes/special-game'
-import { Route as SearchRouteImport } from './routes/search'
+import { Route as SmartBoardRouteImport } from './routes/smart-board'
 import { Route as SchoolsRouteImport } from './routes/schools'
 import { Route as SchoolRouteImport } from './routes/school'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
@@ -24,12 +24,12 @@ import { Route as LiveClassRouteImport } from './routes/live-class'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as GamesRouteImport } from './routes/games'
-import { Route as FreeBoardRouteImport } from './routes/free-board'
 import { Route as EcosystemRouteImport } from './routes/ecosystem'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as ClassmatesRouteImport } from './routes/classmates'
 import { Route as CertificatesRouteImport } from './routes/certificates'
+import { Route as BooksRouteImport } from './routes/books'
 import { Route as BaniRouteImport } from './routes/bani'
 import { Route as BangladeshMapRouteImport } from './routes/bangladesh-map'
 import { Route as IndexRouteImport } from './routes/index'
@@ -59,9 +59,9 @@ const SpecialGameRoute = SpecialGameRouteImport.update({
   path: '/special-game',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
+const SmartBoardRoute = SmartBoardRouteImport.update({
+  id: '/smart-board',
+  path: '/smart-board',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SchoolsRoute = SchoolsRouteImport.update({
@@ -114,11 +114,6 @@ const GamesRoute = GamesRouteImport.update({
   path: '/games',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FreeBoardRoute = FreeBoardRouteImport.update({
-  id: '/free-board',
-  path: '/free-board',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EcosystemRoute = EcosystemRouteImport.update({
   id: '/ecosystem',
   path: '/ecosystem',
@@ -142,6 +137,11 @@ const ClassmatesRoute = ClassmatesRouteImport.update({
 const CertificatesRoute = CertificatesRouteImport.update({
   id: '/certificates',
   path: '/certificates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksRoute = BooksRouteImport.update({
+  id: '/books',
+  path: '/books',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BaniRoute = BaniRouteImport.update({
@@ -189,12 +189,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bangladesh-map': typeof BangladeshMapRoute
   '/bani': typeof BaniRoute
+  '/books': typeof BooksRoute
   '/certificates': typeof CertificatesRoute
   '/classmates': typeof ClassmatesRoute
   '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
   '/ecosystem': typeof EcosystemRoute
-  '/free-board': typeof FreeBoardRoute
   '/games': typeof GamesRoute
   '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
@@ -205,7 +205,7 @@ export interface FileRoutesByFullPath {
   '/quizzes': typeof QuizzesRoute
   '/school': typeof SchoolRoute
   '/schools': typeof SchoolsRouteWithChildren
-  '/search': typeof SearchRoute
+  '/smart-board': typeof SmartBoardRoute
   '/special-game': typeof SpecialGameRoute
   '/student-health': typeof StudentHealthRoute
   '/students': typeof StudentsRouteWithChildren
@@ -220,12 +220,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bangladesh-map': typeof BangladeshMapRoute
   '/bani': typeof BaniRoute
+  '/books': typeof BooksRoute
   '/certificates': typeof CertificatesRoute
   '/classmates': typeof ClassmatesRoute
   '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
   '/ecosystem': typeof EcosystemRoute
-  '/free-board': typeof FreeBoardRoute
   '/games': typeof GamesRoute
   '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
@@ -236,7 +236,7 @@ export interface FileRoutesByTo {
   '/quizzes': typeof QuizzesRoute
   '/school': typeof SchoolRoute
   '/schools': typeof SchoolsRouteWithChildren
-  '/search': typeof SearchRoute
+  '/smart-board': typeof SmartBoardRoute
   '/special-game': typeof SpecialGameRoute
   '/student-health': typeof StudentHealthRoute
   '/students': typeof StudentsRouteWithChildren
@@ -252,12 +252,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/bangladesh-map': typeof BangladeshMapRoute
   '/bani': typeof BaniRoute
+  '/books': typeof BooksRoute
   '/certificates': typeof CertificatesRoute
   '/classmates': typeof ClassmatesRoute
   '/competitions': typeof CompetitionsRoute
   '/dashboard': typeof DashboardRoute
   '/ecosystem': typeof EcosystemRoute
-  '/free-board': typeof FreeBoardRoute
   '/games': typeof GamesRoute
   '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
@@ -268,7 +268,7 @@ export interface FileRoutesById {
   '/quizzes': typeof QuizzesRoute
   '/school': typeof SchoolRoute
   '/schools': typeof SchoolsRouteWithChildren
-  '/search': typeof SearchRoute
+  '/smart-board': typeof SmartBoardRoute
   '/special-game': typeof SpecialGameRoute
   '/student-health': typeof StudentHealthRoute
   '/students': typeof StudentsRouteWithChildren
@@ -285,12 +285,12 @@ export interface FileRouteTypes {
     | '/'
     | '/bangladesh-map'
     | '/bani'
+    | '/books'
     | '/certificates'
     | '/classmates'
     | '/competitions'
     | '/dashboard'
     | '/ecosystem'
-    | '/free-board'
     | '/games'
     | '/leaderboard'
     | '/library'
@@ -301,7 +301,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/school'
     | '/schools'
-    | '/search'
+    | '/smart-board'
     | '/special-game'
     | '/student-health'
     | '/students'
@@ -316,12 +316,12 @@ export interface FileRouteTypes {
     | '/'
     | '/bangladesh-map'
     | '/bani'
+    | '/books'
     | '/certificates'
     | '/classmates'
     | '/competitions'
     | '/dashboard'
     | '/ecosystem'
-    | '/free-board'
     | '/games'
     | '/leaderboard'
     | '/library'
@@ -332,7 +332,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/school'
     | '/schools'
-    | '/search'
+    | '/smart-board'
     | '/special-game'
     | '/student-health'
     | '/students'
@@ -347,12 +347,12 @@ export interface FileRouteTypes {
     | '/'
     | '/bangladesh-map'
     | '/bani'
+    | '/books'
     | '/certificates'
     | '/classmates'
     | '/competitions'
     | '/dashboard'
     | '/ecosystem'
-    | '/free-board'
     | '/games'
     | '/leaderboard'
     | '/library'
@@ -363,7 +363,7 @@ export interface FileRouteTypes {
     | '/quizzes'
     | '/school'
     | '/schools'
-    | '/search'
+    | '/smart-board'
     | '/special-game'
     | '/student-health'
     | '/students'
@@ -379,12 +379,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BangladeshMapRoute: typeof BangladeshMapRoute
   BaniRoute: typeof BaniRoute
+  BooksRoute: typeof BooksRoute
   CertificatesRoute: typeof CertificatesRoute
   ClassmatesRoute: typeof ClassmatesRoute
   CompetitionsRoute: typeof CompetitionsRoute
   DashboardRoute: typeof DashboardRoute
   EcosystemRoute: typeof EcosystemRoute
-  FreeBoardRoute: typeof FreeBoardRoute
   GamesRoute: typeof GamesRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LibraryRoute: typeof LibraryRoute
@@ -395,7 +395,7 @@ export interface RootRouteChildren {
   QuizzesRoute: typeof QuizzesRoute
   SchoolRoute: typeof SchoolRoute
   SchoolsRoute: typeof SchoolsRouteWithChildren
-  SearchRoute: typeof SearchRoute
+  SmartBoardRoute: typeof SmartBoardRoute
   SpecialGameRoute: typeof SpecialGameRoute
   StudentHealthRoute: typeof StudentHealthRoute
   StudentsRoute: typeof StudentsRouteWithChildren
@@ -434,11 +434,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpecialGameRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
+    '/smart-board': {
+      id: '/smart-board'
+      path: '/smart-board'
+      fullPath: '/smart-board'
+      preLoaderRoute: typeof SmartBoardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/schools': {
@@ -511,13 +511,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/free-board': {
-      id: '/free-board'
-      path: '/free-board'
-      fullPath: '/free-board'
-      preLoaderRoute: typeof FreeBoardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/ecosystem': {
       id: '/ecosystem'
       path: '/ecosystem'
@@ -551,6 +544,13 @@ declare module '@tanstack/react-router' {
       path: '/certificates'
       fullPath: '/certificates'
       preLoaderRoute: typeof CertificatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books': {
+      id: '/books'
+      path: '/books'
+      fullPath: '/books'
+      preLoaderRoute: typeof BooksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bani': {
@@ -651,12 +651,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BangladeshMapRoute: BangladeshMapRoute,
   BaniRoute: BaniRoute,
+  BooksRoute: BooksRoute,
   CertificatesRoute: CertificatesRoute,
   ClassmatesRoute: ClassmatesRoute,
   CompetitionsRoute: CompetitionsRoute,
   DashboardRoute: DashboardRoute,
   EcosystemRoute: EcosystemRoute,
-  FreeBoardRoute: FreeBoardRoute,
   GamesRoute: GamesRoute,
   LeaderboardRoute: LeaderboardRoute,
   LibraryRoute: LibraryRoute,
@@ -667,7 +667,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuizzesRoute: QuizzesRoute,
   SchoolRoute: SchoolRoute,
   SchoolsRoute: SchoolsRouteWithChildren,
-  SearchRoute: SearchRoute,
+  SmartBoardRoute: SmartBoardRoute,
   SpecialGameRoute: SpecialGameRoute,
   StudentHealthRoute: StudentHealthRoute,
   StudentsRoute: StudentsRouteWithChildren,

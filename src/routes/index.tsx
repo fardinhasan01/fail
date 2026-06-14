@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+
+
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
   BookOpen,
@@ -11,6 +13,8 @@ import {
   Users,
   Video,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useAuth } from "@/lib/user-store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,6 +72,15 @@ const features = [
 ];
 
 function Landing() {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!auth.loading && auth.authUser) {
+      void navigate({ to: "/dashboard" });
+    }
+  }, [auth.authUser, auth.loading, navigate]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-white/75 border-b border-white/40">
@@ -134,7 +147,7 @@ function Landing() {
                 লাইভ
               </Link>
               <Link
-                to="/search"
+                to="/smart-board"
                 className="px-4 py-2 rounded-full hover:bg-muted/70 hover:text-foreground"
               >
                 সার্চ

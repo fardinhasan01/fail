@@ -92,7 +92,12 @@ export const Route = createFileRoute("/api/chat")({
         const key = process.env.OPENROUTER_API_KEY;
         if (!key) return new Response("Missing OPENROUTER_API_KEY", { status: 500 });
 
-        const openrouter = createOpenRouterProvider(key);
+        const referer =
+          request.headers.get("origin") ??
+          process.env.VITE_PUBLIC_APP_URL ??
+          process.env.VITE_APP_URL ??
+          "http://localhost:3000";
+        const openrouter = createOpenRouterProvider(key, referer);
         const result = streamText({
           model: openrouter("openai/gpt-4o-mini"),
           system: E_PATHSHALA_SYSTEM,

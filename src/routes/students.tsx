@@ -63,6 +63,7 @@ function Students() {
   );
   const schoolVerified = Boolean(selectedSchool?.verified);
   const newestStudent = students[0];
+  const selectedSchoolName = selectedSchool ? normalizeSchoolName(selectedSchool.schoolName) : "";
 
   const setStudentPhotoFromFile = (file: File | null) => {
     if (!file) return;
@@ -94,7 +95,7 @@ function Students() {
       id: studentId,
       schoolId: selectedSchool.id,
       schoolCode: selectedSchool.schoolCode,
-      schoolName: selectedSchool.schoolName,
+      schoolName: normalizeSchoolName(selectedSchool.schoolName),
       fullName: form.fullName.trim(),
       photo: form.photo.trim() || "🧑‍🎓",
       classLevel: form.classLevel,
@@ -115,7 +116,9 @@ function Students() {
     const saved = saveStudent(record);
     const next = [saved, ...students.filter((student) => student.id !== saved.id)];
     setStudents(next);
-    setStatusMessage(`${selectedSchool.schoolName}-এ শিক্ষার্থীটি যাচাইকৃতভাবে যুক্ত হয়েছে।`);
+    setStatusMessage(
+      `${normalizeSchoolName(selectedSchool.schoolName)}-এ শিক্ষার্থীটি যাচাইকৃতভাবে যুক্ত হয়েছে।`,
+    );
     setForm({
       fullName: "",
       photo: "🧑‍🎓",
@@ -281,7 +284,7 @@ function Students() {
                 <div
                   className={`mt-4 rounded-3xl p-4 text-sm ${selectedSchool.verified ? "bg-brand-green/10 text-foreground" : "bg-amber-100 text-foreground"}`}
                 >
-                  <div className="font-semibold">{selectedSchool.schoolName}</div>
+                  <div className="font-semibold">{selectedSchoolName}</div>
                   <div className="mt-1">
                     {selectedSchool.schoolCode} ·{" "}
                     {selectedSchool.verificationStatus === "Verified Institution"
@@ -328,8 +331,8 @@ function Students() {
                       <div>
                         <div className="font-semibold">{student.fullName}</div>
                         <div className="mt-1 text-xs text-muted-foreground">
-                          {student.schoolName} · শ্রেণি {student.classLevel} · শাখা{" "}
-                          {student.section} · রোল {student.roll}
+                          {normalizeSchoolName(student.schoolName)} · শ্রেণি {student.classLevel} ·
+                          শাখা {student.section} · রোল {student.roll}
                         </div>
                       </div>
                       <span
@@ -362,7 +365,7 @@ function Students() {
                 <li>• QR কোড সরাসরি শিক্ষার্থী যাচাই পাতায় নিয়ে যাবে।</li>
               </ul>
               <Link
-                to="/search"
+                to="/smart-board"
                 className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary"
               >
                 <Link2 className="h-4 w-4" /> শিক্ষার্থী ও স্কুল খুঁজুন
@@ -379,7 +382,7 @@ function DigitalCard({ student }: { student: StudentRecord | null }) {
   const preview: StudentRecord = student ?? {
     studentId: "EP-STU-000000",
     fullName: "Student Name",
-    schoolName: "School Name",
+    schoolName: "Kachua Govt Pilot High School",
     classLevel: 8,
     section: "A",
     roll: "14",
@@ -395,7 +398,7 @@ function DigitalCard({ student }: { student: StudentRecord | null }) {
     competitionHistory: [],
     academicRecords: [],
     id: "preview",
-    schoolId: "school-drmc",
+    schoolId: "school-kachua",
   };
   const verificationUrl = createVerificationUrl(preview.studentId);
   const [qr, setQr] = useState<string>(pseudoQrSvgDataUrl(verificationUrl));
@@ -438,7 +441,7 @@ function DigitalCard({ student }: { student: StudentRecord | null }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="text-xs uppercase tracking-[0.25em] opacity-80">Front Side</div>
-            <div className="mt-2 text-2xl font-bold">{preview.schoolName}</div>
+            <div className="mt-2 text-2xl font-bold">{normalizeSchoolName(preview.schoolName)}</div>
             <div className="mt-1 text-sm opacity-90">School Code: {preview.schoolCode}</div>
           </div>
           <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-2xl bg-white/15 text-4xl backdrop-blur">
@@ -508,7 +511,7 @@ function DigitalCard({ student }: { student: StudentRecord | null }) {
           <Download className="h-4 w-4" /> PDF ডাউনলোড
         </button>
         <Link
-          to="/search"
+          to="/smart-board"
           className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-2.5 text-sm font-semibold hover:bg-muted/70"
         >
           <BadgeCheck className="h-4 w-4" /> শিক্ষার্থী খুঁজুন
@@ -555,7 +558,12 @@ function isImageData(value: string) {
   return /^data:image\//i.test(value) || /^https?:\/\//i.test(value);
 }
 
+function normalizeSchoolName(name: string) {
+  return /dhaka\s+residential/i.test(name) ? "Kachua Govt Pilot High School" : name;
+}
+
 function renderIdCardHtml(student: StudentRecord, qr: string, verificationUrl: string) {
+  const schoolName = normalizeSchoolName(student.schoolName);
   return `<!doctype html>
   <html>
     <head>
@@ -589,7 +597,7 @@ function renderIdCardHtml(student: StudentRecord, qr: string, verificationUrl: s
           <div class="row">
             <div>
               <div style="font-size:12px;letter-spacing:.25em;text-transform:uppercase;opacity:.8">Front Side</div>
-              <div style="font-size:30px;font-weight:800;margin-top:8px">${student.schoolName}</div>
+              <div style="font-size:30px;font-weight:800;margin-top:8px">${schoolName}</div>
               <div style="margin-top:4px;font-size:14px">School Code: ${student.schoolCode}</div>
             </div>
             <div class="photo">${isImageData(student.photo) ? `<img src="${student.photo}" alt="${student.fullName}" />` : student.photo}</div>

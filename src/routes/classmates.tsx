@@ -45,8 +45,7 @@ function Classmates() {
   useEffect(() => {
     const unsubscribe = listenClassmates(selectedClass, setMembers);
     return () => {
-      if (typeof unsubscribe === "function") unsubscribe();
-      else unsubscribe?.();
+      if (unsubscribe) unsubscribe();
     };
   }, [selectedClass]);
 
@@ -55,10 +54,8 @@ function Classmates() {
     const unsubscribeRoom = listenChatRoom(roomId, (room) => setRoomTyping(room?.typingBy ?? []));
     void markMessagesSeen(roomId, user.uid);
     return () => {
-      if (typeof unsubscribeMessages === "function") unsubscribeMessages();
-      else unsubscribeMessages?.();
-      if (typeof unsubscribeRoom === "function") unsubscribeRoom();
-      else unsubscribeRoom?.();
+      if (unsubscribeMessages) unsubscribeMessages();
+      if (unsubscribeRoom) unsubscribeRoom();
     };
   }, [roomId, user.uid]);
 

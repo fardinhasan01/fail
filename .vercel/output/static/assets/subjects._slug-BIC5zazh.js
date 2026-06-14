@@ -1,0 +1,1 @@
+import{j as e,A as s,L as t}from"./index-C-nAPIw-.js";const o=()=>e.jsx(s,{children:e.jsxs("div",{className:"p-10 text-center",children:[e.jsx("h1",{className:"text-2xl font-bold mb-2",children:"বিষয়টি পাওয়া যায়নি"}),e.jsx(t,{to:"/subjects",className:"text-primary hover:underline",children:"বিষয় তালিকায় ফিরে যাও"})]})});export{o as notFoundComponent};

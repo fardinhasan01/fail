@@ -107,10 +107,28 @@ function StudentHealthPage() {
   // States for Mood Tracker
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
-  // States for Habit Trackers
-  const [waterCount, setWaterCount] = useState<number>(0);
-  const [sleepCount, setSleepCount] = useState<number>(8);
-  const [screenCount, setScreenCount] = useState<number>(2);
+  // States for Habit Loggers - Loaded from localStorage if available
+  const [waterCount, setWaterCount] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("health:water");
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+  const [sleepCount, setSleepCount] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("health:sleep");
+      return saved ? parseFloat(saved) : 8;
+    }
+    return 8;
+  });
+  const [screenCount, setScreenCount] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("health:screen");
+      return saved ? parseFloat(saved) : 2;
+    }
+    return 2;
+  });
 
   // States for Breathing Coach
   const [breathState, setBreathState] = useState<"inhate" | "hold" | "exhale" | "hold2">("inhate");
@@ -122,10 +140,24 @@ function StudentHealthPage() {
   const [activeItem, setActiveItem] = useState<{ id: string; name: string; duration: number } | null>(null);
   const [viewMode, setViewMode] = useState<"exercise" | "yoga">("exercise");
 
-  // States for Daily Challenge
+  // States for Daily Challenge - Loaded from localStorage
   const [challengeIdx, setChallengeIdx] = useState<number>(0);
-  const [challengeCompleted, setChallengeCompleted] = useState<boolean>(false);
-  const [streakCount, setStreakCount] = useState<number>(3); // Initial mock streak
+  const [challengeCompleted, setChallengeCompleted] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const today = new Date().toDateString();
+      const savedDate = localStorage.getItem("health:challengeDate");
+      const savedStatus = localStorage.getItem("health:challengeCompleted");
+      return savedDate === today && savedStatus === "true";
+    }
+    return false;
+  });
+  const [streakCount, setStreakCount] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("health:streak");
+      return saved ? parseInt(saved, 10) : 3;
+    }
+    return 3;
+  });
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   // Load random challenge once on mount
@@ -133,6 +165,38 @@ function StudentHealthPage() {
     const randomIdx = Math.floor(Math.random() * CHALLENGES.length);
     setChallengeIdx(randomIdx);
   }, []);
+
+  // Sync state to localStorage & dispatch custom event to sync AppShell notifications
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("health:water", waterCount.toString());
+      window.dispatchEvent(new Event("health-update"));
+    }
+  }, [waterCount]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("health:sleep", sleepCount.toString());
+      window.dispatchEvent(new Event("health-update"));
+    }
+  }, [sleepCount]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("health:screen", screenCount.toString());
+      window.dispatchEvent(new Event("health-update"));
+    }
+  }, [screenCount]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const today = new Date().toDateString();
+      localStorage.setItem("health:challengeDate", today);
+      localStorage.setItem("health:challengeCompleted", challengeCompleted ? "true" : "false");
+      localStorage.setItem("health:streak", streakCount.toString());
+      window.dispatchEvent(new Event("health-update"));
+    }
+  }, [challengeCompleted, streakCount]);
 
   // Breathing Coach cycle logic
   useEffect(() => {
@@ -189,19 +253,14 @@ function StudentHealthPage() {
     setTimerActive(true);
   }
 
-  function toggleTimer() {
-    setTimerActive(!timerActive);
-  }
-
   function resetTimer() {
     if (activeItem) {
       setTimerLeft(activeItem.duration);
-      setTimerActive(false);
     }
+    setTimerActive(false);
   }
 
   function handleCompleteChallenge() {
-    if (challengeCompleted) return;
     setChallengeCompleted(true);
     setStreakCount((prev) => prev + 1);
     setShowConfetti(true);
@@ -618,7 +677,7 @@ function StudentHealthPage() {
                 {/* Controls */}
                 <div className="flex gap-2">
                   <button
-                    onClick={toggleTimer}
+                    onClick={() => setTimerActive(!timerActive)}
                     className="p-3 bg-brand-purple text-white rounded-2xl hover:bg-brand-purple/90 shadow-soft cursor-pointer transition-colors"
                   >
                     {timerActive ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
@@ -659,7 +718,7 @@ function StudentHealthPage() {
                   {"calories" in item && (
                     <div className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-600 bg-orange-50 px-2.5 py-0.5 rounded-md">
                       <Flame className="h-3 w-3" />
-                      ~{item.calories} ক্যালরি ক্ষয়
+                      ~{(item as any).calories} ক্যালরি ক্ষয়
                     </div>
                   )}
 

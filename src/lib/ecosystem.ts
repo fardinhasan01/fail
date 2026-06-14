@@ -126,24 +126,26 @@ const RTDB_KEYS = {
   library: "epathshala/ecosystem/library",
 } as const;
 
+const DEFAULT_PUBLIC_APP_ORIGIN = "https://e-pathshalaa.vercel.app";
+
 type CollectionKey = keyof typeof STORAGE_KEYS;
 const rtdbUnsubscribers = new Map<CollectionKey, Unsubscribe>();
 
 const seedSchools: SchoolRecord[] = [
   {
-    id: "school-drmc",
+    id: "school-kachua",
     schoolCode: "EP-2026-001245",
     schoolSerialNumber: "SCH-0001",
     verified: true,
     verificationStatus: "Verified Institution",
-    schoolName: "Dhaka Residential Model College",
+    schoolName: "Kachua Govt. Pilot High School",
     eiinNumber: "109876",
     logo: "🏫",
-    address: "Mirpur, Dhaka, Bangladesh",
+    address: "Kachua, Chandpur, Bangladesh",
     principal: "Prof. A. K. M. Hasan",
     phone: "+880-2-9000123",
-    district: "Dhaka",
-    division: "Dhaka",
+    district: "Chandpur",
+    division: "Chattogram",
     students: 3421,
     teachers: 156,
     achievements: [
@@ -157,19 +159,19 @@ const seedSchools: SchoolRecord[] = [
       "A flagship model for Bangladesh digital education with strong academics, competitions, and student leadership.",
   },
   {
-    id: "school-bcpsc",
+    id: "school-chandpur",
     schoolCode: "EP-2026-000882",
     schoolSerialNumber: "SCH-0002",
     verified: true,
     verificationStatus: "Verified Institution",
-    schoolName: "BCSIR School & College",
+    schoolName: "Chandpur Hasan Ali Govt. Boys School",
     eiinNumber: "112233",
     logo: "🧪",
-    address: "Agargaon, Dhaka, Bangladesh",
+    address: "Chandpur Sadar, Chandpur, Bangladesh",
     principal: "Dr. Salma Rahman",
     phone: "+880-2-55550123",
-    district: "Dhaka",
-    division: "Dhaka",
+    district: "Chandpur",
+    division: "Chattogram",
     students: 2190,
     teachers: 121,
     achievements: ["Science fair champions", "Top coding school", "STEM leadership award"],
@@ -178,19 +180,19 @@ const seedSchools: SchoolRecord[] = [
     about: "A STEM-first school profile built for science, coding, and project-based learning.",
   },
   {
-    id: "school-rangpur",
+    id: "school-matripith",
     schoolCode: "EP-2026-004521",
     schoolSerialNumber: "SCH-0003",
     verified: true,
     verificationStatus: "Verified Institution",
-    schoolName: "Rangpur Cantonment Public School",
+    schoolName: "Matripith Ucchya Biddyaloy",
     eiinNumber: "145678",
     logo: "🌳",
-    address: "Rangpur Sadar, Rangpur, Bangladesh",
+    address: "Cumilla, Bangladesh",
     principal: "Col. Farhana Akter",
     phone: "+880-521-123456",
-    district: "Rangpur",
-    division: "Rangpur",
+    district: "Cumilla",
+    division: "Chattogram",
     students: 1840,
     teachers: 98,
     achievements: ["Regional quiz finalists", "Library growth award"],
@@ -198,14 +200,35 @@ const seedSchools: SchoolRecord[] = [
     gallery: ["Campus Walk", "Quiz Arena", "Library"],
     about: "A regional school profile pending official ecosystem verification.",
   },
+  {
+    id: "school-haziganj",
+    schoolCode: "EP-2026-008214",
+    schoolSerialNumber: "SCH-0004",
+    verified: true,
+    verificationStatus: "Verified Institution",
+    schoolName: "Haziganj Govt. Pilot School",
+    eiinNumber: "167890",
+    logo: "🎓",
+    address: "Haziganj, Chandpur, Bangladesh",
+    principal: "Mr. Rafiqul Islam",
+    phone: "+880-481-123456",
+    district: "Chandpur",
+    division: "Chattogram",
+    students: 1965,
+    teachers: 104,
+    achievements: ["District quiz champions", "Digital classroom excellence"],
+    competitionRankings: ["Top Schools #6"],
+    gallery: ["Assembly", "Library", "Lab"],
+    about: "A modern government school with strong participation in education and competitions.",
+  },
 ];
 
 const seedStudents: StudentRecord[] = [
   {
     id: "EP-STU-260001",
-    schoolId: "school-drmc",
+    schoolId: "school-kachua",
     schoolCode: "EP-2026-001245",
-    schoolName: "Dhaka Residential Model College",
+    schoolName: "Kachua Govt. Pilot High School",
     fullName: "Fahim Hasan",
     photo: "🧑‍🎓",
     classLevel: 8,
@@ -227,9 +250,9 @@ const seedStudents: StudentRecord[] = [
   },
   {
     id: "EP-STU-260002",
-    schoolId: "school-drmc",
+    schoolId: "school-kachua",
     schoolCode: "EP-2026-001245",
-    schoolName: "Dhaka Residential Model College",
+    schoolName: "Kachua Govt. Pilot High School",
     fullName: "Nafisa Rahman",
     photo: "👩‍🎓",
     classLevel: 10,
@@ -251,9 +274,9 @@ const seedStudents: StudentRecord[] = [
   },
   {
     id: "EP-STU-260003",
-    schoolId: "school-bcpsc",
-    schoolCode: "EP-2026-000882",
-    schoolName: "BCSIR School & College",
+    schoolId: "school-kachua",
+    schoolCode: "EP-2026-001245",
+    schoolName: "Kachua Govt. Pilot High School",
     fullName: "Sabbir Hossain",
     photo: "🧑‍🔬",
     classLevel: 9,
@@ -278,8 +301,8 @@ const seedCompetitions: CompetitionRecord[] = [
     category: "Quiz Battles",
     title: "School A vs School B: National Quiz Night",
     description: "Real-time scoreboard with fast question rounds and team ranking.",
-    schoolA: "Dhaka Residential Model College",
-    schoolB: "BCSIR School & College",
+    schoolA: "Kachua Govt. Pilot High School",
+    schoolB: "Chandpur Hasan Ali Govt. Boys School",
     status: "Live",
     scoreboard: { left: 420, right: 390 },
     judgeScore: 92,
@@ -290,8 +313,8 @@ const seedCompetitions: CompetitionRecord[] = [
     category: "Debate Battles",
     title: "Climate Action Youth Debate",
     description: "Topic announcement, team registration, video submission, and judge scoring.",
-    schoolA: "Rangpur Cantonment Public School",
-    schoolB: "Dhaka Residential Model College",
+    schoolA: "Matripith Ucchya Biddyaloy",
+    schoolB: "Kachua Govt. Pilot High School",
     status: "Judging",
     scoreboard: { left: 78, right: 84 },
     judgeScore: 89,
@@ -302,8 +325,8 @@ const seedCompetitions: CompetitionRecord[] = [
     category: "Science Fair Arena",
     title: "Virtual Science Fair Arena",
     description: "Project uploads, visitor votes, and AI support for evaluation.",
-    schoolA: "BCSIR School & College",
-    schoolB: "Rangpur Cantonment Public School",
+    schoolA: "Chandpur Hasan Ali Govt. Boys School",
+    schoolB: "Haziganj Govt. Pilot School",
     status: "Upcoming",
     scoreboard: { left: 0, right: 0 },
     judgeScore: 0,
@@ -316,7 +339,7 @@ const seedPosts: SocialPost[] = [
     id: "post-01",
     author: "Fahim Hasan",
     authorRole: "Student",
-    schoolName: "Dhaka Residential Model College",
+    schoolName: "Kachua Govt. Pilot High School",
     title: "Uploaded my class 8 science note",
     body: "Shared a short note with diagrams for the water cycle and some revision questions.",
     tags: ["#science", "#notes", "#class8"],
@@ -327,7 +350,7 @@ const seedPosts: SocialPost[] = [
     id: "post-02",
     author: "Prof. A. K. M. Hasan",
     authorRole: "Teacher",
-    schoolName: "Dhaka Residential Model College",
+    schoolName: "Kachua Govt. Pilot High School",
     title: "New debate topic announced",
     body: "The motion this week is about digital learning improving rural access.",
     tags: ["#debate", "#digital", "#school"],
@@ -336,9 +359,9 @@ const seedPosts: SocialPost[] = [
   },
   {
     id: "post-03",
-    author: "BCSIR School & College",
+    author: "Chandpur Hasan Ali Govt. Boys School",
     authorRole: "School",
-    schoolName: "BCSIR School & College",
+    schoolName: "Chandpur Hasan Ali Govt. Boys School",
     title: "Robotics team shortlisted",
     body: "Our junior robotics team will represent the school in the national innovation challenge.",
     tags: ["#robotics", "#innovation", "#stem"],
@@ -700,10 +723,19 @@ export function createVerificationUrl(studentId: string) {
 }
 
 export function createAppUrl(pathname: string) {
-  if (isBrowser() && window.location?.origin) {
+  const configured =
+    (isBrowser()
+      ? import.meta.env.VITE_PUBLIC_APP_URL || import.meta.env.VITE_APP_URL
+      : process.env.VITE_PUBLIC_APP_URL || process.env.VITE_APP_URL) ?? "";
+  const origin = configured.replace(/\/+$/, "") || DEFAULT_PUBLIC_APP_ORIGIN;
+  if (
+    isBrowser() &&
+    window.location?.origin &&
+    !/^(localhost|127\.0\.0\.1|::1)$/i.test(window.location.hostname)
+  ) {
     return new URL(pathname, window.location.origin).toString();
   }
-  return pathname;
+  return new URL(pathname, origin).toString();
 }
 
 export function pseudoQrSvgDataUrl(text: string) {
@@ -798,7 +830,7 @@ export function searchCatalog(query: string): SearchResult[] {
         type: "Book",
         title: item.title,
         subtitle: `${item.category} · ${item.level}`,
-        href: "/library",
+        href: "/books",
         score,
       });
     }
@@ -851,9 +883,9 @@ function defaultSearchResults(): SearchResult[] {
   return [
     {
       type: "School",
-      title: "Dhaka Residential Model College",
+      title: "Kachua Govt. Pilot High School",
       subtitle: "EP-2026-001245 · Verified Institution",
-      href: "/schools/school-drmc",
+      href: "/schools/school-kachua",
       score: 88,
     },
     {

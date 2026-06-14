@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">E-Patshala</string>
+    <string name="title_activity_main">E-Patshala</string>
+    <string name="package_name">com.epatshala.app</string>
+    <string name="custom_url_scheme">com.epatshala.app</string>
+</resources>

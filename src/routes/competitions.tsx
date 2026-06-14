@@ -26,6 +26,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { onValue, ref } from "firebase/database";
 
 import { AppShell } from "@/components/layout/AppShell";
+import { getPublicAppUrl } from "@/lib/public-url";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,6 +81,22 @@ type CompetitionSearch = {
   room?: string;
 };
 
+function normalizeRoomToken(token: string) {
+  const trimmed = token.trim();
+  if (!trimmed) return "";
+  try {
+    const parsed = new URL(trimmed);
+    const room = parsed.searchParams.get("room")?.trim();
+    if (room) return room;
+    const pathRoom = parsed.pathname.split("/").filter(Boolean).pop();
+    return pathRoom ?? trimmed;
+  } catch {
+    const match = trimmed.match(/[?&]room=([^&]+)/i);
+    if (match?.[1]) return decodeURIComponent(match[1]);
+    return trimmed;
+  }
+}
+
 export const Route = createFileRoute("/competitions")({
   validateSearch: (search: Record<string, unknown>): CompetitionSearch => ({
     room: typeof search.room === "string" && search.room.trim() ? search.room.trim() : undefined,
@@ -101,16 +118,16 @@ function CompetitionPage() {
   const [feed, setFeed] = useState<BattleFeedItem[]>([]);
   const [serverOffset, setServerOffset] = useState(0);
   const [createForm, setCreateForm] = useState({
-    roomLabel: "QUIZ ROOM",
-    title: "E-পাঠশালা Live Quiz Battle",
-    teamAName: "Team Aurora",
-    teamBName: "Team Bengal",
+    roomLabel: "Kachua Quiz Room",
+    title: "Kachua vs Chandpur Live Quiz Battle",
+    teamAName: "Kachua Govt. Pilot High School",
+    teamBName: "Chandpur Hasan Ali Govt. Boys School",
     classLevel: String(user.class),
     roundType: "standard" as BattleRoundType,
     totalQuestions: "10",
   });
   const [joinForm, setJoinForm] = useState({
-    roomCode: "",
+    roomCode: search.room ?? "",
     side: "B" as BattleSide,
     role: "member" as "captain" | "member" | "spectator",
   });
@@ -121,6 +138,7 @@ function CompetitionPage() {
   useEffect(() => {
     const value = search.room ?? "";
     setRoomId(value);
+    setJoinForm((current) => ({ ...current, roomCode: value }));
   }, [search.room]);
 
   useEffect(() => {
@@ -274,8 +292,11 @@ function CompetitionPage() {
   const certificate = selectedRoom ? buildCertificate(selectedRoom, history[0] ?? null) : null;
   const roomShareUrl =
     selectedRoom && typeof window !== "undefined"
-      ? `${window.location.origin}/competitions?room=${selectedRoom.id}`
+      ? getPublicAppUrl(`/competitions?room=${selectedRoom.id}`)
       : "";
+  const inviteLabel = roomShareUrl.includes("localhost")
+    ? "Configure VITE_PUBLIC_APP_URL for public sharing"
+    : "Public invite link ready";
 
   const handleCreateRoom = async () => {
     const created = await createBattleRoom({
@@ -289,13 +310,15 @@ function CompetitionPage() {
       totalQuestions: Number(createForm.totalQuestions) || 10,
     });
     setRoomId(created.id);
+    setJoinForm((current) => ({ ...current, roomCode: created.code }));
     await navigate({ to: "/competitions", search: { room: created.id } });
   };
 
   const handleJoinRoom = async () => {
-    const token = roomId.trim();
+    const token = joinForm.roomCode.trim() || roomId.trim();
     if (!token) return;
-    const resolvedRoomId = (await findBattleRoomByCode(token)) ?? token;
+    const resolvedRoomId =
+      (await findBattleRoomByCode(normalizeRoomToken(token))) ?? normalizeRoomToken(token);
     await joinBattleRoom(resolvedRoomId, user, joinForm.side, joinForm.role);
     setRoomId(resolvedRoomId);
     await navigate({ to: "/competitions", search: { room: resolvedRoomId } });
@@ -343,10 +366,16 @@ function CompetitionPage() {
 
   const handleCopyInvite = async () => {
     if (!selectedRoom) return;
-    const link = `${window.location.origin}/competitions?room=${encodeURIComponent(selectedRoom.id)}`;
-    await navigator.clipboard.writeText(`Join room ${selectedRoom.code}: ${link}`);
+    const link = getPublicAppUrl(`/competitions?room=${encodeURIComponent(selectedRoom.id)}`);
+    await navigator.clipboard.writeText(`${selectedRoom.code}\n${link}`);
     setCopyState("done");
     window.setTimeout(() => setCopyState("idle"), 1800);
+  };
+
+  const handleOpenInvite = () => {
+    if (!selectedRoom) return;
+    const link = getPublicAppUrl(`/competitions?room=${encodeURIComponent(selectedRoom.id)}`);
+    window.open(link, "_blank", "noopener,noreferrer");
   };
 
   const handleAdvanceToNext = async () => {
@@ -440,6 +469,14 @@ function CompetitionPage() {
                     <div className="mt-1 break-all text-sm font-semibold">
                       {roomShareUrl || "তৈরির পরে শেয়ার করুন"}
                     </div>
+                  </div>
+                  <div className="rounded-3xl border border-dashed border-border bg-white/60 p-4 text-xs leading-5 text-muted-foreground">
+                    {inviteLabel}
+                    <br />
+                    Room code:{" "}
+                    <span className="font-semibold text-foreground">
+                      {selectedRoom?.code ?? "—"}
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button onClick={handleCopyInvite} variant="outline" className="rounded-2xl">
@@ -614,9 +651,11 @@ function CompetitionPage() {
                 <CardContent className="space-y-4">
                   <Field label="Room ID">
                     <Input
-                      value={roomId}
-                      onChange={(event) => setRoomId(event.target.value)}
-                      placeholder="QUIZ-728194 or room id"
+                      value={joinForm.roomCode}
+                      onChange={(event) =>
+                        setJoinForm((current) => ({ ...current, roomCode: event.target.value }))
+                      }
+                      placeholder="Paste invite link or room code"
                     />
                   </Field>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -664,6 +703,16 @@ function CompetitionPage() {
                     রুমে যোগ দিন
                     <Share2 className="h-4 w-4" />
                   </Button>
+                  {selectedRoom ? (
+                    <div className="flex flex-wrap gap-2">
+                      <Button onClick={handleCopyInvite} variant="outline" className="rounded-2xl">
+                        {copyState === "done" ? "কপি হয়েছে" : "ইনভাইট কপি"}
+                      </Button>
+                      <Button onClick={handleOpenInvite} variant="outline" className="rounded-2xl">
+                        নতুন ট্যাবে খুলুন
+                      </Button>
+                    </div>
+                  ) : null}
                 </CardContent>
               </Card>
 

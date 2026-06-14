@@ -64,11 +64,22 @@ export interface AuthSession {
   authUser: FirebaseUser | null;
   profile: UserState;
   signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (payload: { email: string; password: string; name: string; classLevel: number; role: "student" | "teacher" }) => Promise<void>;
+  signUpWithEmail: (payload: {
+    email: string;
+    password: string;
+    name: string;
+    classLevel: number;
+    role: "student" | "teacher";
+  }) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (patch: Partial<UserState>) => Promise<void>;
-  awardProgress: (payload: { xp?: number; coins?: number; badges?: string[]; lessonsCompleted?: number }) => Promise<void>;
+  awardProgress: (payload: {
+    xp?: number;
+    coins?: number;
+    badges?: string[];
+    lessonsCompleted?: number;
+  }) => Promise<void>;
 }
 
 const DEFAULT_PROFILE: UserState = {
@@ -77,9 +88,9 @@ const DEFAULT_PROFILE: UserState = {
   name: "Aarav",
   class: 3,
   role: "student",
-  schoolId: "school-drmc",
+  schoolId: "school-kachua",
   schoolCode: "EP-2026-001245",
-  schoolName: "Dhaka Residential Model College",
+  schoolName: "Kachua Govt. Pilot High School",
   studentId: "EP-STU-260001",
   avatar: "🦊",
   xp: 1280,
@@ -134,7 +145,9 @@ function normalizeString(value: unknown, fallback: string) {
 }
 
 function normalizeStringArray(value: unknown, fallback: string[] = []) {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : fallback;
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : fallback;
 }
 
 function createFallbackProfile(overrides: Partial<UserState> = {}): UserState {
@@ -145,7 +158,11 @@ function createFallbackProfile(overrides: Partial<UserState> = {}): UserState {
   return profile;
 }
 
-function profileFromSnapshot(uid: string, email: string, data: DocumentData | undefined): UserState {
+function profileFromSnapshot(
+  uid: string,
+  email: string,
+  data: DocumentData | undefined,
+): UserState {
   const name = normalizeString(data?.name, email.split("@")[0] ?? DEFAULT_PROFILE.name);
   return createFallbackProfile({
     uid,
@@ -161,7 +178,10 @@ function profileFromSnapshot(uid: string, email: string, data: DocumentData | un
     xp: normalizeNumber(data?.xp, DEFAULT_PROFILE.xp),
     coins: normalizeNumber(data?.coins, DEFAULT_PROFILE.coins),
     streak: normalizeNumber(data?.streak, DEFAULT_PROFILE.streak),
-    level: normalizeNumber(data?.level, computeLevel(normalizeNumber(data?.xp, DEFAULT_PROFILE.xp))),
+    level: normalizeNumber(
+      data?.level,
+      computeLevel(normalizeNumber(data?.xp, DEFAULT_PROFILE.xp)),
+    ),
     badges: normalizeStringArray(data?.badges, DEFAULT_PROFILE.badges),
     lessonsCompleted: normalizeNumber(data?.lessonsCompleted, DEFAULT_PROFILE.lessonsCompleted),
     friends: normalizeStringArray(data?.friends),
@@ -173,12 +193,17 @@ function profileFromSnapshot(uid: string, email: string, data: DocumentData | un
 }
 
 function profileFromFirebaseUser(user: FirebaseUser, payload?: Partial<UserState>): UserState {
-  const name = payload?.name ?? user.displayName ?? user.email?.split("@")[0] ?? DEFAULT_PROFILE.name;
+  const name =
+    payload?.name ?? user.displayName ?? user.email?.split("@")[0] ?? DEFAULT_PROFILE.name;
   return createFallbackProfile({
     uid: user.uid,
     email: user.email ?? "",
     name,
-    avatar: sanitizeAvatar(payload?.avatar ?? user.photoURL, avatarForRole(payload?.role ?? "student"), name),
+    avatar: sanitizeAvatar(
+      payload?.avatar ?? user.photoURL,
+      avatarForRole(payload?.role ?? "student"),
+      name,
+    ),
     class: payload?.class ?? DEFAULT_PROFILE.class,
     role: payload?.role ?? "student",
     schoolId: payload?.schoolId ?? DEFAULT_PROFILE.schoolId,
@@ -203,19 +228,19 @@ async function upsertFirebaseProfile(user: FirebaseUser, patch: Partial<UserStat
   if (!db) return;
   const ref = doc(db, "users", user.uid);
   const base = profileFromFirebaseUser(user, patch);
-      await setDoc(
-        ref,
-        {
-          uid: user.uid,
-          email: user.email ?? "",
-          name: base.name,
-          class: base.class,
-          role: base.role,
-          schoolId: base.schoolId,
-          schoolCode: base.schoolCode,
-          schoolName: base.schoolName,
-          studentId: base.studentId,
-          avatar: base.avatar,
+  await setDoc(
+    ref,
+    {
+      uid: user.uid,
+      email: user.email ?? "",
+      name: base.name,
+      class: base.class,
+      role: base.role,
+      schoolId: base.schoolId,
+      schoolCode: base.schoolCode,
+      schoolName: base.schoolName,
+      studentId: base.studentId,
+      avatar: base.avatar,
       xp: base.xp,
       coins: base.coins,
       streak: base.streak,
@@ -341,7 +366,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const auth = getFirebaseAuth();
         if (!auth) throw new Error("Firebase Authentication is not available.");
         const result = await createUserWithEmailAndPassword(auth, email, password);
-        const next = profileFromFirebaseUser(result.user, { name, class: classLevel, role, avatar: avatarForRole(role) });
+        const next = profileFromFirebaseUser(result.user, {
+          name,
+          class: classLevel,
+          role,
+          avatar: avatarForRole(role),
+        });
         await upsertFirebaseProfile(result.user, next);
         await updateFirebaseProfile(result.user, { displayName: name }).catch(() => {});
       },
@@ -452,11 +482,21 @@ export async function followUser(targetUid: string) {
   const currentData = (await getDoc(currentRef)).data();
   const targetData = (await getDoc(targetRef)).data();
   await updateDoc(currentRef, {
-    following: [...new Set([...(Array.isArray(currentData?.following) ? currentData.following : []), targetUid])],
+    following: [
+      ...new Set([
+        ...(Array.isArray(currentData?.following) ? currentData.following : []),
+        targetUid,
+      ]),
+    ],
     lastSeen: serverTimestamp(),
   }).catch(() => {});
   await updateDoc(targetRef, {
-    followers: [...new Set([...(Array.isArray(targetData?.followers) ? targetData.followers : []), auth.currentUser.uid])],
+    followers: [
+      ...new Set([
+        ...(Array.isArray(targetData?.followers) ? targetData.followers : []),
+        auth.currentUser.uid,
+      ]),
+    ],
     lastSeen: serverTimestamp(),
   }).catch(() => {});
 }
@@ -476,7 +516,12 @@ export async function awardXp(amount: number, coins = 0) {
   const snapshot = await getDoc(ref);
   const current = snapshot.data();
   const next = createFallbackProfile({
-    ...profileFromFirebaseUser(auth.currentUser, current ? profileFromSnapshot(auth.currentUser.uid, auth.currentUser.email ?? "", current) : undefined),
+    ...profileFromFirebaseUser(
+      auth.currentUser,
+      current
+        ? profileFromSnapshot(auth.currentUser.uid, auth.currentUser.email ?? "", current)
+        : undefined,
+    ),
     xp: normalizeNumber(current?.xp, DEFAULT_PROFILE.xp) + amount,
     coins: normalizeNumber(current?.coins, DEFAULT_PROFILE.coins) + coins,
   });

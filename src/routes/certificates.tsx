@@ -19,8 +19,7 @@ function Certificates() {
   useEffect(() => {
     const unsubscribe = listenCertificates(auth.profile.uid, setRecords);
     return () => {
-      if (typeof unsubscribe === "function") unsubscribe();
-      else unsubscribe?.();
+      if (unsubscribe) unsubscribe();
     };
   }, [auth.profile.uid]);
 

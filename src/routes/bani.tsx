@@ -1,6 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
-  ArrowLeft,
   Bot,
   Brain,
   Cpu,
@@ -30,7 +29,7 @@ const INITIAL_MESSAGES = [
     parts: [
       {
         type: "text",
-        text: "আমি E-পাঠশালা সহায়িকা সুপার AI Core v3.5। তোমার প্রশ্ন টাইপ করো, আমি সেকেন্ডের মধ্যে সমাধান দিচ্ছি।",
+        text: "স্বাগতম! আমি E-পাঠশালা AI সহায়ক। পড়া, প্রশ্ন, কুইজ, আর হোমওয়ার্কে আমি তোমার পাশে আছি।",
       },
     ],
   },
@@ -44,7 +43,7 @@ const QUICK_PROMPTS = [
 ];
 
 export const Route = createFileRoute("/bani")({
-  head: () => ({ meta: [{ title: "সহায়ক AI Core · E-পাঠশালা" }] }),
+  head: () => ({ meta: [{ title: "স্বর্গীয় সহায়িকা AI Core · E-পাঠশালা" }] }),
   component: SupportAi,
 });
 
@@ -53,11 +52,11 @@ function SupportAi() {
   const [temperature, setTemperature] = useState<number>(0.7);
   const [latency, setLatency] = useState<number>(140);
   const [neuralLogs, setNeuralLogs] = useState<string[]>([
-    "System Initialized. Status: Online",
+    "Synaptic connection established. Status: Heavenly Online",
     "Loaded Bangla NLP Grammar Engine v4.1.",
-    "Awaiting user neural input..."
+    "Awaiting student query input...",
   ]);
-  
+
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const chat = useChat({
@@ -88,21 +87,18 @@ function SupportAi() {
     if (!question || isBusy) return;
 
     setDraft("");
-    
-    // Add logs
-    setNeuralLogs(prev => [
+
+    // Add logs (removing any OpenAI or raw brand names)
+    setNeuralLogs((prev) => [
       ...prev.slice(-6),
-      `User query: "${question.substring(0, 25)}..."`,
-      "Routing to OpenAI via OpenRouter...",
-      "Synthesizing semantic response..."
+      `Input query parsed: "${question.substring(0, 25)}..."`,
+      "Routing query through synaptic networks...",
+      "Generating celestial response stream...",
     ]);
 
     await chat.sendMessage({ text: question });
-    
-    setNeuralLogs(prev => [
-      ...prev.slice(-6),
-      "Response stream received successfully."
-    ]);
+
+    setNeuralLogs((prev) => [...prev.slice(-6), "Synaptic response synced successfully."]);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -112,9 +108,9 @@ function SupportAi() {
 
   function applyPrompt(prompt: string) {
     setDraft(prompt);
-    setNeuralLogs(prev => [
+    setNeuralLogs((prev) => [
       ...prev.slice(-6),
-      `Quick prompt loaded: "${prompt.substring(0, 20)}..."`
+      `Quick query loaded: "${prompt.substring(0, 20)}..."`,
     ]);
   }
 
@@ -127,106 +123,186 @@ function SupportAi() {
 
   return (
     <AppShell>
-      <div className="px-4 md:px-8 py-6 md:py-8 max-w-7xl mx-auto space-y-6">
-        
-        {/* Advanced Futuristic Header */}
-        <header className="rounded-[2.25rem] border border-violet-500/20 bg-slate-950 text-white shadow-glow overflow-hidden relative">
-          {/* Cyberpunk Grid Background Overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:24px_24px] opacity-15" />
-          <div className="absolute inset-0 bg-radial-gradient(circle_at_top_right,rgba(139,92,246,0.18),transparent_50%)" />
-          
-          <div className="p-6 md:p-8 lg:p-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center relative z-10">
-            <div className="space-y-5">
-              <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-950/50 px-4 py-2 text-xs md:text-sm font-semibold text-violet-300">
-                <Sparkles className="h-4 w-4 text-violet-400 animate-pulse" />
-                QUANTUM NLP CORE V3.5 ENABLED
+      <div className="relative mx-auto max-w-7xl space-y-6 overflow-hidden rounded-[2.75rem] px-4 py-6 md:px-8 md:py-8">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.18),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.16),transparent_26%),linear-gradient(135deg,#eff6ff_0%,#fdf2f8_42%,#fffbeb_100%)]" />
+        <div className="absolute -right-20 top-0 -z-10 h-[26rem] w-[26rem] rounded-full bg-amber-200/40 blur-[110px] animate-float" />
+        <div className="absolute -left-24 bottom-0 -z-10 h-[22rem] w-[22rem] rounded-full bg-sky-200/30 blur-[100px]" />
+
+        <header className="relative overflow-hidden rounded-[2.5rem] border border-white/70 bg-slate-950/95 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:24px_24px] opacity-20" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.35),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.25),transparent_28%)]" />
+
+          <div className="relative grid gap-6 p-6 md:p-10 lg:grid-cols-[1.08fr_0.92fr]">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.28em] text-amber-100 shadow-soft backdrop-blur">
+                <Sparkles className="h-4 w-4 text-amber-300" />
+                E-পাঠশালা AI STUDIO
               </div>
-              
-              <div className="space-y-3">
-                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                  Sohayok AI System
+
+              <div className="space-y-4">
+                <h1 className="max-w-2xl text-4xl font-black leading-none tracking-tight md:text-6xl">
+                  <span className="bg-gradient-to-r from-amber-200 via-sky-200 to-violet-200 bg-clip-text text-transparent">
+                    সহায়িকা AI
+                  </span>
                 </h1>
-                <p className="max-w-2xl text-xs md:text-sm text-slate-300 leading-relaxed">
-                  পড়াশোনার যেকোনো জটিল বিষয়কে সহজ করতে প্রস্তুত সুপার কম্পিউটিং এআই। এটি এখন আরও দ্রুত এবং সমৃদ্ধ। বাংলা ও ইংরেজিতে প্রশ্ন লিখে মুহূর্তেই রিয়েল-টাইম জেনারেটিভ উত্তর নাও।
+                <p className="max-w-2xl text-sm leading-7 text-white/72 md:text-base">
+                  পড়াশোনার যেকোনো জটিল বিষয়কে সহজ করতে প্রস্তুত এই AI। বাংলা বা ইংরেজিতে প্রশ্ন
+                  লিখো, আর দ্রুত, স্বচ্ছ, বন্ধুসুলভ উত্তর নাও।
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2 text-[10px] md:text-xs font-semibold text-slate-400">
-                <span className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1.5 flex items-center gap-1">
-                  <Zap className="h-3 w-3 text-yellow-400" /> Low Latency
+              <div className="flex flex-wrap gap-2 text-[10px] md:text-xs font-bold text-white/82">
+                <span className="rounded-full border border-white/12 bg-white/8 px-3 py-1.5 flex items-center gap-1.5 shadow-soft backdrop-blur">
+                  <Zap className="h-3.5 w-3.5 text-amber-300" /> Latency: {latency}ms
                 </span>
-                <span className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1.5 flex items-center gap-1">
-                  <Brain className="h-3 w-3 text-purple-400" /> Advanced Reasoning
+                <span className="rounded-full border border-white/12 bg-white/8 px-3 py-1.5 flex items-center gap-1.5 shadow-soft backdrop-blur">
+                  <Brain className="h-3.5 w-3.5 text-violet-300" /> Advanced Reasoning
                 </span>
-                <span className="rounded-full border border-slate-800 bg-slate-900 px-3 py-1.5 flex items-center gap-1">
-                  <Cpu className="h-3 w-3 text-cyan-400" /> GPT-4o-Mini Engine
+                <span className="rounded-full border border-white/12 bg-white/8 px-3 py-1.5 flex items-center gap-1.5 shadow-soft backdrop-blur">
+                  <Cpu className="h-3.5 w-3.5 text-sky-300" /> Synaptic Engine
                 </span>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {QUICK_PROMPTS.slice(0, 4).map((prompt, index) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => applyPrompt(prompt)}
+                    className="rounded-[1.4rem] border border-white/10 bg-white/8 p-4 text-left text-xs font-semibold text-white/78 shadow-soft backdrop-blur transition-transform hover:-translate-y-1 hover:bg-white/12"
+                  >
+                    <div className="text-[10px] uppercase tracking-[0.22em] text-white/45">
+                      Prompt {index + 1}
+                    </div>
+                    <div className="mt-2 line-clamp-3 leading-5">{prompt}</div>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Neural Diagnostics Grid */}
-            <div className="grid gap-3 grid-cols-2">
-              {[
-                { label: "Core Model", value: "GPT-4o-Mini", color: "text-violet-400" },
-                { label: "Latency", value: `${latency} ms`, color: "text-cyan-400" },
-                { label: "Bandwidth Status", value: "Optimal", color: "text-emerald-400" },
-                { label: "Synapse Speed", value: "99.8 TFLOPS", color: "text-indigo-400" },
-              ].map((item) => (
+            <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/8 p-5 backdrop-blur-xl">
+              <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-white/55">
+                    Live Core
+                  </p>
+                  <h2 className="mt-1 text-xl font-black text-white">Command center</h2>
+                </div>
                 <div
-                  key={item.label}
-                  className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-soft backdrop-blur-md"
+                  className={cn(
+                    "flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/10 shadow-soft",
+                    isBusy && "animate-pulse",
+                  )}
                 >
-                  <div className="text-[10px] uppercase tracking-[0.18em] text-slate-400">
-                    {item.label}
-                  </div>
-                  <div className={cn("mt-1 text-base md:text-lg font-black", item.color)}>
-                    {item.value}
+                  <Bot className={cn("h-7 w-7", isBusy ? "text-amber-300" : "text-sky-300")} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-[1.35rem] border border-white/10 bg-slate-900/50 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-white/45">Mode</div>
+                  <div className="mt-2 text-lg font-black text-white">
+                    {isBusy ? "Thinking" : "Ready"}
                   </div>
                 </div>
-              ))}
+                <div className="rounded-[1.35rem] border border-white/10 bg-slate-900/50 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-white/45">
+                    Safety
+                  </div>
+                  <div className="mt-2 text-lg font-black text-emerald-300">Guarded</div>
+                </div>
+                <div className="rounded-[1.35rem] border border-white/10 bg-slate-900/50 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-white/45">
+                    Reasoning
+                  </div>
+                  <div className="mt-2 text-lg font-black text-violet-200">Adaptive</div>
+                </div>
+                <div className="rounded-[1.35rem] border border-white/10 bg-slate-900/50 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-white/45">
+                    Latency
+                  </div>
+                  <div className="mt-2 text-lg font-black text-amber-200">{latency}ms</div>
+                </div>
+              </div>
+
+              <div className="rounded-[1.6rem] border border-white/10 bg-[linear-gradient(135deg,rgba(15,23,42,0.92),rgba(14,165,233,0.24))] p-4 shadow-soft">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.25em] text-white/50">
+                  <span>Signal</span>
+                  <span>Encrypted</span>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-[78%] rounded-full bg-gradient-to-r from-amber-300 via-sky-300 to-violet-300" />
+                </div>
+              </div>
             </div>
           </div>
         </header>
 
+        <section className="grid gap-4 md:grid-cols-4">
+          <div className="rounded-[1.6rem] border border-white/70 bg-white/70 p-4 shadow-soft backdrop-blur">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Stream</div>
+            <div className="mt-2 text-2xl font-black text-slate-900">Live</div>
+          </div>
+          <div className="rounded-[1.6rem] border border-white/70 bg-white/70 p-4 shadow-soft backdrop-blur">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Latency</div>
+            <div className="mt-2 text-2xl font-black text-slate-900">{latency}ms</div>
+          </div>
+          <div className="rounded-[1.6rem] border border-white/70 bg-white/70 p-4 shadow-soft backdrop-blur">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Model</div>
+            <div className="mt-2 text-2xl font-black text-slate-900">Adaptive</div>
+          </div>
+          <div className="rounded-[1.6rem] border border-white/70 bg-white/70 p-4 shadow-soft backdrop-blur">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-slate-500">Memory</div>
+            <div className="mt-2 text-2xl font-black text-slate-900">{neuralLogs.length}</div>
+          </div>
+        </section>
+
         {/* Dashboard Panels */}
-        <section className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr] items-start">
-          
-          {/* Left Panel: Neural Settings & Logs */}
-          <aside className="space-y-4 lg:sticky lg:top-4">
-            
+        <section className="grid items-start gap-5 xl:grid-cols-[0.88fr_1.12fr]">
+          {/* Left Panel: Settings & Logs */}
+          <aside className="space-y-4 xl:sticky xl:top-4">
             {/* Setting Dashboard */}
-            <div className="rounded-[2rem] border border-slate-800 bg-slate-950 p-6 shadow-glow text-white space-y-5">
+            <div className="space-y-5 rounded-[2rem] border border-white/60 bg-white/80 p-6 text-slate-800 shadow-soft backdrop-blur-xl">
               <div className="flex items-center gap-3">
-                {/* Glowing Core Visualizer */}
+                {/* Heavenly Pulsing Halo Visualizer */}
                 <div className="relative flex h-12 w-12 items-center justify-center shrink-0">
                   <div
                     className={cn(
-                      "absolute inset-0 rounded-full blur-md opacity-60 transition-all duration-500",
+                      "absolute inset-0 rounded-full blur-md opacity-40 transition-all duration-500 bg-gradient-to-br",
                       isBusy
-                        ? "bg-violet-500 animate-pulse scale-110"
-                        : "bg-cyan-500"
+                        ? "from-amber-400 to-orange-400 animate-pulse scale-110"
+                        : "from-sky-400 to-amber-300",
                     )}
                   />
-                  <div className="relative grid h-10 w-10 place-items-center rounded-full bg-slate-900 border border-slate-800 text-white">
-                    <Bot className={cn("h-5 w-5", isBusy ? "text-violet-400 animate-spin" : "text-cyan-400")} />
+                  <div className="relative grid h-10 w-10 place-items-center rounded-full bg-white border border-amber-100 text-slate-800 shadow-sm">
+                    <Bot
+                      className={cn(
+                        "h-5 w-5",
+                        isBusy ? "text-amber-500 animate-spin" : "text-sky-500",
+                      )}
+                    />
                   </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">AI Core Visualizer</h2>
-                  <p className="text-[10px] text-slate-400">
-                    {isBusy ? "সিন্যাপ্স ডাটা প্রসেস হচ্ছে..." : "ইনপুট গ্রহণের জন্য প্রস্তুত।"}
+                <div className="text-left">
+                  <h2 className="text-base font-black bg-gradient-to-r from-amber-600 to-indigo-600 bg-clip-text text-transparent">
+                    AI Core Visualizer
+                  </h2>
+                  <p className="text-[10px] text-slate-500 font-bold">
+                    {isBusy ? "উত্তর তৈরি হচ্ছে..." : "ইনপুট গ্রহণের জন্য প্রস্তুত।"}
                   </p>
                 </div>
               </div>
 
               {/* Advanced Parameters Slider */}
-              <div className="space-y-3 pt-3 border-t border-slate-900">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-300 flex items-center gap-1">
-                    <Sliders className="h-3.5 w-3.5 text-violet-400" /> AI Temperature:
+              <div className="space-y-3 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-slate-600 flex items-center gap-1">
+                    <Sliders className="h-3.5 w-3.5 text-amber-500" /> AI Temperature:
                   </span>
-                  <span className="font-mono text-cyan-400 font-bold">
-                    {temperature} ({temperature <= 0.4 ? "সংক্ষিপ্ত" : temperature <= 0.8 ? "ভারসাম্য" : "সৃজনশীল"})
+                  <span className="font-mono text-amber-600 font-black">
+                    {temperature} (
+                    {temperature <= 0.4 ? "সংক্ষিপ্ত" : temperature <= 0.8 ? "ভারসাম্য" : "সৃজনশীল"}
+                    )
                   </span>
                 </div>
                 <input
@@ -236,17 +312,18 @@ function SupportAi() {
                   step="0.1"
                   value={temperature}
                   onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  className="w-full accent-violet-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none"
+                  className="w-full accent-amber-500 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none"
                 />
-                <p className="text-[9px] text-slate-500 leading-relaxed">
-                  কম তাপমাত্রা উত্তরকে সংক্ষিপ্ত ও তথ্যবহুল করে। বেশি তাপমাত্রা উত্তরকে বর্ণনামূলক করে তোলে।
+                <p className="text-[9px] text-slate-500 leading-relaxed font-semibold text-left">
+                  কম তাপমাত্রা উত্তরকে সংক্ষিপ্ত ও তথ্যবহুল করে। বেশি তাপমাত্রা উত্তরকে বর্ণনামূলক
+                  করে তোলে।
                 </p>
               </div>
 
               {/* Quick Prompt Selector */}
-              <div className="space-y-2.5 pt-3 border-t border-slate-900">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 flex items-center gap-1">
-                  <MessageSquare className="h-3.5 w-3.5 text-cyan-400" /> নমুনা প্রশ্নসমূহ
+              <div className="space-y-2.5 pt-3 border-t border-slate-100">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 flex items-center gap-1">
+                  <MessageSquare className="h-3.5 w-3.5 text-sky-500" /> নমুনা প্রশ্নসমূহ
                 </span>
                 <div className="space-y-2">
                   {QUICK_PROMPTS.map((prompt) => (
@@ -254,7 +331,7 @@ function SupportAi() {
                       key={prompt}
                       type="button"
                       onClick={() => applyPrompt(prompt)}
-                      className="w-full rounded-2xl border border-slate-900 bg-slate-900/40 px-4 py-3 text-left text-xs font-medium text-slate-300 hover:text-white hover:border-violet-500/40 hover:bg-slate-900 transition-all cursor-pointer"
+                      className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-3 text-left text-xs font-bold text-slate-700 hover:text-amber-700 hover:border-amber-400 hover:bg-amber-50/40 transition-all cursor-pointer shadow-sm"
                     >
                       {prompt}
                     </button>
@@ -264,19 +341,19 @@ function SupportAi() {
             </div>
 
             {/* Neural Execution Terminal Logs */}
-            <div className="rounded-[2rem] border border-slate-800 bg-slate-950 p-5 shadow-glow text-white space-y-3">
-              <div className="flex items-center justify-between text-xs font-semibold pb-2 border-b border-slate-900">
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <Terminal className="h-3.5 w-3.5 text-cyan-400" /> Synaptic Terminal logs
+            <div className="space-y-3 rounded-[2rem] border border-white/60 bg-white/80 p-5 text-slate-800 shadow-soft backdrop-blur-xl">
+              <div className="flex items-center justify-between text-xs font-bold pb-2 border-b border-slate-100">
+                <span className="flex items-center gap-1.5 text-slate-600">
+                  <Terminal className="h-3.5 w-3.5 text-sky-500" /> Synaptic Terminal logs
                 </span>
-                <span className="inline-flex items-center gap-1 rounded bg-slate-900 px-1.5 py-0.5 text-[8px] font-mono text-emerald-400 border border-slate-800">
+                <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-[8px] font-mono text-emerald-600 border border-emerald-100 font-bold">
                   ACTIVE
                 </span>
               </div>
-              <div className="font-mono text-[9px] text-cyan-300/85 space-y-1.5 max-h-[140px] overflow-y-auto leading-relaxed">
+              <div className="font-mono text-[9px] text-indigo-950 space-y-1.5 max-h-[140px] overflow-y-auto leading-relaxed font-semibold text-left">
                 {neuralLogs.map((log, i) => (
                   <div key={i} className="flex gap-1">
-                    <span className="text-slate-600 font-bold">&gt;</span>
+                    <span className="text-amber-400 font-bold">&gt;</span>
                     <span>{log}</span>
                   </div>
                 ))}
@@ -284,29 +361,42 @@ function SupportAi() {
             </div>
           </aside>
 
-          {/* Right Panel: Advanced Holographic Chat Console */}
-          <div className="rounded-[2.25rem] border border-slate-800 bg-slate-950 shadow-glow overflow-hidden flex flex-col justify-between text-white min-h-[640px]">
-            
+          {/* Right Panel: AI chat console */}
+          <div className="flex min-h-[700px] flex-col justify-between overflow-hidden rounded-[2.25rem] border border-white/60 bg-slate-950/90 text-white shadow-[0_24px_80px_rgba(15,23,42,0.22)] backdrop-blur-xl">
             {/* Console Header */}
-            <div className="flex items-center justify-between gap-3 border-b border-slate-900 px-6 py-4 bg-slate-950/80 backdrop-blur-md">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <div>
-                  <h2 className="text-base font-bold text-white">Quantum Chat Terminal</h2>
-                  <p className="text-[10px] text-slate-400">Secure end-to-end AI channel active</p>
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-white/5 px-6 py-4 backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-emerald-400/40 blur-md" />
+                  <div className="relative h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+                <div className="text-left">
+                  <h2 className="text-base font-black text-white">Quantum Chat Terminal</h2>
+                  <p className="text-[10px] font-bold text-white/55">
+                    Secure end-to-end AI channel active
+                  </p>
                 </div>
               </div>
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                ড্যাশবোর্ড
-              </Link>
+              <div className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+                {isBusy ? "Streaming" : "Ready"}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 border-b border-white/10 bg-slate-950/70 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                Bangla
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                Science
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Quiz</span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                Homework
+              </span>
             </div>
 
             {/* Chat Messages Stream */}
-            <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-4 max-h-[50vh] bg-slate-950">
+            <div className="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.08),transparent_28%),linear-gradient(180deg,rgba(15,23,42,0.95),rgba(15,23,42,0.88))] px-4 py-6 space-y-4 max-h-[50vh]">
               {chat.messages.map((message, index) => {
                 const text = extractText(message);
                 const isUser = message.role === "user";
@@ -318,33 +408,38 @@ function SupportAi() {
                     className={cn("flex gap-3", isUser ? "justify-end" : "justify-start")}
                   >
                     {!isUser && (
-                      <div className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-violet-500/20 bg-slate-900 text-violet-400 shadow-soft">
+                      <div className="mt-1 grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/10 text-amber-200 shadow-soft">
                         <Bot className="h-4 w-4" />
                       </div>
                     )}
 
                     <div
                       className={cn(
-                        "max-w-[92%] md:max-w-[80%] rounded-[1.5rem] px-5 py-4 text-xs md:text-sm leading-relaxed shadow-soft border transition-all",
+                        "max-w-[92%] rounded-[1.5rem] border px-5 py-4 text-xs md:text-sm leading-relaxed shadow-soft transition-all text-left backdrop-blur",
                         isUser
-                          ? "bg-gradient-to-br from-violet-600 to-indigo-700 text-white border-violet-500/30"
-                          : "bg-slate-900/60 border-slate-800 text-slate-100"
+                          ? "border-sky-300/20 bg-gradient-to-br from-sky-500 via-indigo-500 to-violet-600 text-white"
+                          : "border-white/10 bg-white/8 text-white/88",
                       )}
                     >
-                      <div className="mb-2 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                      <div
+                        className={cn(
+                          "mb-2 flex items-center gap-1.5 text-[9px] font-black tracking-widest",
+                          isUser ? "text-sky-100" : "text-white/45",
+                        )}
+                      >
                         {isUser ? (
                           <>
-                            <UserRound className="h-3 w-3 text-indigo-400" />
+                            <UserRound className="h-3 w-3" />
                             USER (YOU)
                           </>
                         ) : (
                           <>
-                            <Bot className="h-3 w-3 text-violet-400" />
+                            <Bot className="h-3 w-3 text-amber-300" />
                             SOHAYOK SUPER AI
                           </>
                         )}
                       </div>
-                      <div className="whitespace-pre-wrap leading-relaxed font-sans">
+                      <div className="whitespace-pre-wrap leading-relaxed font-sans font-semibold text-white/92">
                         {text ||
                           (isAssistant && index === chat.messages.length - 1 && isBusy
                             ? "শ্লেষাত্মক ডাটা ট্রান্সমিশন হচ্ছে..."
@@ -353,7 +448,7 @@ function SupportAi() {
                     </div>
 
                     {isUser && (
-                      <div className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 shadow-soft">
+                      <div className="mt-1 grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/10 text-white/65 shadow-soft">
                         <UserRound className="h-4 w-4" />
                       </div>
                     )}
@@ -363,10 +458,10 @@ function SupportAi() {
 
               {isBusy && (
                 <div className="flex items-center gap-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-xl border border-violet-500/20 bg-slate-900 text-violet-400 shadow-soft">
-                    <LoaderCircle className="h-4 w-4 animate-spin text-violet-400" />
+                  <div className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/10 text-amber-200 shadow-soft">
+                    <LoaderCircle className="h-4 w-4 animate-spin text-amber-300" />
                   </div>
-                  <div className="rounded-[1.5rem] border border-slate-800 bg-slate-900/30 px-5 py-3 text-xs md:text-sm text-slate-400 shadow-soft">
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/8 px-5 py-3 text-xs md:text-sm text-white/65 shadow-soft font-semibold backdrop-blur">
                     ডাটা অ্যানালাইসিস চলছে...
                   </div>
                 </div>
@@ -376,7 +471,10 @@ function SupportAi() {
             </div>
 
             {/* Chat Controller Form */}
-            <form onSubmit={handleSubmit} className="border-t border-slate-900 bg-slate-950 p-4 md:p-6">
+            <form
+              onSubmit={handleSubmit}
+              className="border-t border-white/10 bg-slate-950/90 p-4 md:p-6"
+            >
               <div className="space-y-3">
                 <Textarea
                   value={draft}
@@ -388,25 +486,25 @@ function SupportAi() {
                     }
                   }}
                   placeholder="তোমার প্রশ্নের কোয়েরি এখানে লিখো..."
-                  className="min-h-24 rounded-2xl border-slate-900 bg-slate-900/30 px-4 py-4 text-sm text-white placeholder-slate-500 focus:border-violet-500/50 focus:ring-violet-500/10 focus:bg-slate-900/50 resize-none font-sans"
+                  className="min-h-24 rounded-2xl border-white/10 bg-white/5 px-4 py-4 text-sm text-white placeholder:text-white/35 focus:border-amber-400/50 focus:ring-amber-400/10 focus:bg-white/8 resize-none font-sans"
                 />
-                
+
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] font-bold text-white/45">
                     Enter চাপলে সরাসরি সেন্ড হবে, Shift+Enter দিলে নতুন লাইন হবে।
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
                       type="button"
                       variant="outline"
-                      className="rounded-xl border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white cursor-pointer px-3.5 py-2 text-xs"
+                      className="cursor-pointer rounded-xl border-white/10 bg-white/5 px-3.5 py-2 text-xs font-bold text-white/75 shadow-sm hover:bg-white/10 hover:text-white"
                       onClick={() => {
                         chat.clearError();
                         chat.setMessages(INITIAL_MESSAGES);
                         setDraft("");
                         setNeuralLogs([
                           "AI core memory buffer cleared.",
-                          "Initialized welcoming parameters."
+                          "Initialized welcoming parameters.",
                         ]);
                       }}
                     >
@@ -415,13 +513,13 @@ function SupportAi() {
                     </Button>
                     <Button
                       type="submit"
-                      className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-soft px-5 py-2 text-xs md:text-sm font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                      className="cursor-pointer rounded-xl border border-amber-300/30 bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2 text-xs font-semibold text-white shadow-soft transition-all hover:opacity-90 active:scale-95 md:text-sm"
                       disabled={!draft.trim() || isBusy}
                     >
                       {isBusy ? (
-                        <LoaderCircle className="h-3.5 w-3.5 animate-spin mr-1" />
+                        <LoaderCircle className="mr-1 h-3.5 w-3.5 animate-spin" />
                       ) : (
-                        <Send className="h-3.5 w-3.5 mr-1" />
+                        <Send className="mr-1 h-3.5 w-3.5" />
                       )}
                       {isBusy ? "প্রসেসিং" : "কোয়েরি সেন্ড"}
                     </Button>

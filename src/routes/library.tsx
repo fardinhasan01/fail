@@ -1,14 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ExternalLink,
-  FileText,
-  Headphones,
-  PlusCircle,
-  ScanLine,
-  Sparkles,
-  Boxes,
-  PlayCircle,
-} from "lucide-react";
+import { ExternalLink, FileText, Headphones, PlusCircle, Boxes, PlayCircle } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/AppShell";
@@ -31,23 +22,23 @@ type LibraryVideo = {
 
 const educationalVideos: LibraryVideo[] = [
   {
-    title: "বাংলা বর্ণমালা ও পাঠ",
+    title: "বাংলা ব্যাকরণ ও পাঠ",
     channel: "শিক্ষামূলক ভিডিও",
-    url: "https://youtu.be/48ZRxmIMgNQ?si=eUrEmNz3Z7Lb7tcJ",
+    url: "https://youtu.be/AfiqSCwQTfM?si=0LLz4Ld65MgnPtUM",
     classLevel: 1,
     subject: "বাংলা",
   },
   {
     title: "গণিতের সহজ ব্যাখ্যা",
     channel: "শিক্ষামূলক ভিডিও",
-    url: "https://youtu.be/jaTwx7vUq54?si=i_LWBrGnD-OvtpOL",
+    url: "https://youtu.be/jp6WuzjCPRE?si=SZxYGdcSOmf1OUy_",
     classLevel: 2,
     subject: "গণিত",
   },
   {
     title: "বিজ্ঞানের মজার ক্লাস",
     channel: "শিক্ষামূলক ভিডিও",
-    url: "https://youtu.be/FpoowsMdb_s?si=HLa_JOIfS5Sc14Vb",
+    url: "https://youtu.be/j5Vwp6PQyNE?si=L_4vudkJEoFMwpjW",
     classLevel: 4,
     subject: "বিজ্ঞান",
   },
@@ -57,16 +48,23 @@ const featuredShorts: LibraryVideo[] = [
   {
     title: "শর্টস: বাংলা শেখা",
     channel: "শিক্ষামূলক শর্টস",
-    url: "https://youtube.com/shorts/7ArLIKTaW5Y?si=R2jNPmjM8wZgwHAr",
+    url: "https://youtu.be/AfiqSCwQTfM?si=0LLz4Ld65MgnPtUM",
     classLevel: 1,
     subject: "বাংলা",
   },
   {
     title: "শর্টস: দ্রুত গণিত",
     channel: "শিক্ষামূলক শর্টস",
-    url: "https://youtube.com/shorts/VhbIzWHCS_w?si=NNnT1EDU5wBIVsB7",
+    url: "https://youtu.be/jp6WuzjCPRE?si=SZxYGdcSOmf1OUy_",
     classLevel: 2,
     subject: "গণিত",
+  },
+  {
+    title: "শর্টস: বিজ্ঞান রিভিশন",
+    channel: "শিক্ষামূলক শর্টস",
+    url: "https://youtu.be/j5Vwp6PQyNE?si=L_4vudkJEoFMwpjW",
+    classLevel: 4,
+    subject: "বিজ্ঞান",
   },
 ];
 
@@ -81,11 +79,11 @@ type UploadForm = {
 };
 
 export const Route = createFileRoute("/library")({
-  head: () => ({ meta: [{ title: "লাইব্রেরি · E-পাঠশালা" }] }),
+  head: () => ({ meta: [{ title: "বই · E-পাঠশালা" }] }),
   component: Library,
 });
 
-function Library() {
+export function Library() {
   ensureEcosystemSeed();
   const [uploadedAssets, setUploadedAssets] = useState<LibraryAsset[]>(getLibraryAssets());
   const [selectedClass, setSelectedClass] = useState<number | "all">("all");
@@ -190,15 +188,15 @@ function Library() {
             <div className="flex flex-col justify-between gap-6 p-6 md:p-10">
               <div className="space-y-5">
                 <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-200">
-                  লাইব্রেরি শেল্ফ
+                  বই
                 </span>
                 <div className="max-w-3xl space-y-4">
                   <h1 className="text-3xl font-black tracking-tight md:text-5xl">
-                    পূর্ণ পর্দার bookshelf যেখানে বই, নোট, অডিও আর AR একই জায়গায়
+                    পূর্ণ পর্দার বইয়ের জগৎ যেখানে পাঠ, ভিডিও আর লাইভ রিসোর্স একসাথে
                   </h1>
                   <p className="max-w-2xl text-sm leading-7 text-white/75 md:text-base">
-                    Left shelf-এ PDF ও notes, middle shelf-এ audio notes ও novels, right shelf-এ
-                    periodic table mini web এবং 3D AR models আছে।
+                    E-Bangla Library সরাসরি প্ল্যাটফর্মের ভেতরে চলছে, আর তার নিচে তোমার বই, নোট,
+                    অডিও, AR model এবং ভিডিও রিসোর্স একসাথে সাজানো আছে।
                   </p>
                 </div>
               </div>
@@ -211,12 +209,12 @@ function Library() {
                   লাইভ ক্লাস
                 </Link>
                 <a
-                  href="https://zperiod.app"
+                  href="https://www.ebanglalibrary.com"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10"
                 >
-                  Periodic Table খুলুন
+                  বাইরে খুলো
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </div>
@@ -249,21 +247,31 @@ function Library() {
             <div className="overflow-hidden rounded-[2rem] border border-white/40 bg-slate-950 text-white shadow-[0_24px_70px_rgba(15,23,42,0.22)]">
               <div className="border-b border-white/10 p-5">
                 <div className="flex items-center gap-2">
-                  <ScanLine className="h-5 w-5 text-emerald-300" />
-                  <h2 className="text-xl font-bold">Periodic Table mini web</h2>
+                  <Boxes className="h-5 w-5 text-emerald-300" />
+                  <h2 className="text-xl font-bold">E-Bangla Library</h2>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-white/70">
-                  zperiod.app এখন বাম দিকের main area-তে বড় view হিসেবে লোড হচ্ছে।
+                  এই ভিউটি পুরো main area জুড়ে চলছে, তাই বই পড়ার সময় পাশের প্যানেল আলাদা করে
+                  খুঁজতে হবে না।
                 </p>
               </div>
               <div className="bg-white">
                 <iframe
-                  title="Periodic Table"
-                  src="https://zperiod.app"
-                  className="h-[68vh] w-full"
-                  loading="lazy"
+                  title="E-Bangla Library"
+                  src="https://www.ebanglalibrary.com"
+                  className="h-[86vh] w-full"
+                  loading="eager"
                 />
               </div>
+            </div>
+
+            <div className="overflow-hidden rounded-[2rem] border border-white/40 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.12)]">
+              <iframe
+                title="zperiod.app"
+                src="https://zperiod.app"
+                className="h-[62vh] w-full"
+                loading="lazy"
+              />
             </div>
 
             <div className="glass-strong rounded-[2rem] p-5 md:p-6">
@@ -386,7 +394,7 @@ function Library() {
             <div className="glass-strong rounded-[2rem] p-5 md:p-6">
               <div className="flex items-center gap-2">
                 <Boxes className="h-5 w-5 text-primary" />
-                <h3 className="text-xl font-bold">3D AR models</h3>
+                <h3 className="text-xl font-bold">3D Models</h3>
               </div>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 3D model upload এখানে RTDB-তে সেভ হবে, তারপর AR shelf-এ দেখাবে।
@@ -403,66 +411,102 @@ function Library() {
                 <PlayCircle className="w-6 h-6 text-primary" />
                 <div>
                   <h2 className="text-2xl font-bold">ভিডিও ফিড</h2>
-                  <p className="text-sm text-muted-foreground">শিক্ষামূলক ভিডিও ও শর্টস।</p>
+                  <p className="text-sm text-muted-foreground">
+                    মিনিওয়েবের নিচে বাম থেকে ডানে সাজানো থাম্বনেইল।
+                  </p>
                 </div>
               </div>
-              <div className="grid gap-4">
-                {filteredVideos.map((video) => (
-                  <a
-                    key={video.url + video.title}
-                    href={video.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group glass rounded-3xl overflow-hidden shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all bg-card"
-                  >
-                    <div className="relative aspect-video bg-slate-100">
-                      <img
-                        src={`https://i.ytimg.com/vi/${youtubeIdFromUrl(video.url)}/hqdefault.jpg`}
-                        alt={video.title}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
-                      <div className="absolute bottom-3 right-3 rounded-md bg-black/80 px-2 py-1 text-xs font-semibold text-white">
-                        শ্রেণি {video.classLevel}
+              <div className="space-y-5">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <div className="rounded-[1.75rem] border border-border bg-white/90 p-4 shadow-soft">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                          ভিডিও
+                        </div>
+                        <div className="mt-1 font-bold">শিক্ষামূলক ভিডিও</div>
                       </div>
+                      <span className="rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-semibold text-brand-orange">
+                        {filteredVideos.length}
+                      </span>
                     </div>
-                    <div className="p-4">
-                      <div className="font-bold leading-snug">{video.title}</div>
-                      <div className="mt-1 flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                        <span>{video.channel}</span>
-                        <span>{video.subject}</span>
+                    <div className="mt-4 flex gap-4 overflow-x-auto pb-2 pr-2 snap-x snap-mandatory">
+                      {filteredVideos.map((video) => (
+                        <a
+                          key={video.url + video.title}
+                          href={video.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group min-w-[240px] max-w-[240px] snap-start overflow-hidden rounded-[1.5rem] border border-border bg-background shadow-soft transition-all hover:-translate-y-1 hover:shadow-glow"
+                        >
+                          <div className="relative aspect-video bg-slate-100">
+                            <img
+                              src={`https://i.ytimg.com/vi/${youtubeIdFromUrl(video.url)}/hqdefault.jpg`}
+                              alt={video.title}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
+                            <div className="absolute bottom-3 right-3 rounded-md bg-black/80 px-2 py-1 text-xs font-semibold text-white">
+                              শ্রেণি {video.classLevel}
+                            </div>
+                          </div>
+                          <div className="p-4">
+                            <div className="line-clamp-2 font-bold leading-snug">{video.title}</div>
+                            <div className="mt-1 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                              <span>{video.channel}</span>
+                              <span>{video.subject}</span>
+                            </div>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.75rem] border border-border bg-white/90 p-4 shadow-soft">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                          Shorts
+                        </div>
+                        <div className="mt-1 font-bold">দ্রুত রিভিশন থাম্বনেইল</div>
                       </div>
+                      <span className="rounded-full bg-brand-blue/10 px-3 py-1 text-xs font-semibold text-brand-blue">
+                        {filteredReels.length}
+                      </span>
                     </div>
-                  </a>
-                ))}
-                {filteredReels.map((reel) => (
-                  <a
-                    key={reel.url}
-                    href={reel.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group glass rounded-3xl overflow-hidden shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all bg-card"
-                  >
-                    <div className="relative aspect-[9/16] bg-gradient-blue text-white overflow-hidden">
-                      <img
-                        src={`https://i.ytimg.com/vi/${youtubeIdFromUrl(reel.url)}/hqdefault.jpg`}
-                        alt={reel.title}
-                        className="h-full w-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/20" />
-                      <div className="absolute bottom-3 right-3 rounded-md bg-black/80 px-2 py-1 text-xs font-semibold text-white">
-                        Shorts
-                      </div>
+                    <div className="mt-4 flex gap-4 overflow-x-auto pb-2 pr-2 snap-x snap-mandatory">
+                      {filteredReels.map((reel) => (
+                        <a
+                          key={reel.url}
+                          href={reel.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group min-w-[200px] max-w-[200px] snap-start overflow-hidden rounded-[1.5rem] border border-border bg-background shadow-soft transition-all hover:-translate-y-1 hover:shadow-glow"
+                        >
+                          <div className="relative aspect-[9/16] overflow-hidden bg-gradient-blue text-white">
+                            <img
+                              src={`https://i.ytimg.com/vi/${youtubeIdFromUrl(reel.url)}/hqdefault.jpg`}
+                              alt={reel.title}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
+                            <div className="absolute inset-0 bg-black/20" />
+                            <div className="absolute bottom-3 right-3 rounded-md bg-black/80 px-2 py-1 text-xs font-semibold text-white">
+                              Shorts
+                            </div>
+                          </div>
+                          <div className="p-4">
+                            <div className="line-clamp-2 font-bold">{reel.title}</div>
+                            <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
+                              <span>{reel.subject}</span>
+                              <span>শ্রেণি {reel.classLevel}</span>
+                            </div>
+                          </div>
+                        </a>
+                      ))}
                     </div>
-                    <div className="p-4">
-                      <div className="font-bold">{reel.title}</div>
-                      <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{reel.subject}</span>
-                        <span>শ্রেণি {reel.classLevel}</span>
-                      </div>
-                    </div>
-                  </a>
-                ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

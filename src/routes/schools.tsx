@@ -158,7 +158,7 @@ export function Schools() {
                   label="স্কুলের নাম"
                   value={form.schoolName}
                   onChange={(value) => setForm((current) => ({ ...current, schoolName: value }))}
-                  placeholder="Dhaka Residential Model College"
+                  placeholder="Kachua Govt. Pilot High School"
                 />
                 <Field
                   label="EIIN নম্বর"
@@ -317,7 +317,7 @@ export function Schools() {
                   <School2 className="h-4 w-4" /> Register students
                 </Link>
                 <Link
-                  to="/search"
+                  to="/smart-board"
                   className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-2.5 text-sm font-semibold hover:bg-muted/70"
                 >
                   <BookOpen className="h-4 w-4" /> Search profiles

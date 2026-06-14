@@ -23,17 +23,13 @@ function Login() {
   const [pending, setPending] = useState<null | "email" | "google">(null);
   const [error, setError] = useState<string>("");
 
-  const redirectTo = useMemo(() => {
-    if (typeof window === "undefined") return "/dashboard";
-    const url = new URL(window.location.href);
-    return url.searchParams.get("redirect") ?? "/dashboard";
-  }, []);
+  const redirectTo = "/dashboard";
 
   useEffect(() => {
     if (!auth.loading && auth.authUser) {
-      void navigate({ to: redirectTo as "/dashboard" });
+      void navigate({ to: redirectTo });
     }
-  }, [auth.authUser, auth.loading, navigate, redirectTo]);
+  }, [auth.authUser, auth.loading, navigate]);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -53,7 +49,7 @@ function Login() {
         await auth.signInWithEmail(email.trim(), password);
       }
 
-      void navigate({ to: redirectTo as "/dashboard" });
+      void navigate({ to: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "প্রবেশ করা যায়নি।");
     } finally {
@@ -66,7 +62,7 @@ function Login() {
     setPending("google");
     try {
       await auth.signInWithGoogle();
-      void navigate({ to: redirectTo as "/dashboard" });
+      void navigate({ to: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google লগইন ব্যর্থ হয়েছে।");
     } finally {
@@ -83,7 +79,7 @@ function Login() {
               <img src="/assets/e-pathshala-logo.png" alt="E-পাঠশালা" className="w-14 h-14 rounded-2xl object-cover bg-white shadow-soft" />
               <div>
                 <div className="text-2xl font-bold">E-পাঠশালা</div>
-                <div className="text-sm text-muted-foreground">Firebase-powered digital school</div>
+                <div className="text-sm text-muted-foreground">a digital school</div>
               </div>
             </Link>
 

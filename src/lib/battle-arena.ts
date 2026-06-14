@@ -19,8 +19,19 @@ import { quizBank } from "@/lib/bangladesh-learning";
 import { getFirebaseDb, getFirebaseRtdb, firebaseEnabled } from "@/lib/firebase";
 
 export type BattleFormat = "quiz" | "debate";
-export type BattleScale = "student-vs-student" | "team-vs-team" | "school-vs-school" | "district-vs-district";
-export type BattleStatus = "draft" | "invited" | "accepted" | "countdown" | "live" | "judging" | "finished";
+export type BattleScale =
+  | "student-vs-student"
+  | "team-vs-team"
+  | "school-vs-school"
+  | "district-vs-district";
+export type BattleStatus =
+  | "draft"
+  | "invited"
+  | "accepted"
+  | "countdown"
+  | "live"
+  | "judging"
+  | "finished";
 export type BattleSide = "for" | "against";
 export type BattleRole = "host" | "challenger" | "judge" | "audience" | "spectator";
 
@@ -134,7 +145,16 @@ export interface BattleSignal {
 
 export interface BattleAntiCheatEvent {
   id: string;
-  type: "visibility" | "copy" | "paste" | "blur" | "contextmenu" | "keydown" | "device" | "screenshot" | "camera";
+  type:
+    | "visibility"
+    | "copy"
+    | "paste"
+    | "blur"
+    | "contextmenu"
+    | "keydown"
+    | "device"
+    | "screenshot"
+    | "camera";
   severity: "info" | "warning" | "critical";
   message: string;
   createdAt: number;
@@ -214,7 +234,9 @@ function asString(value: unknown, fallback = "") {
 }
 
 function asArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
 }
 
 function normalizeRoom(input: Partial<BattleRoom> & Pick<BattleRoom, "id">): BattleRoom {
@@ -224,7 +246,9 @@ function normalizeRoom(input: Partial<BattleRoom> & Pick<BattleRoom, "id">): Bat
     title: asString(input.title, "National Battle Arena"),
     format: input.format === "debate" ? "debate" : "quiz",
     scale:
-      input.scale === "team-vs-team" || input.scale === "school-vs-school" || input.scale === "district-vs-district"
+      input.scale === "team-vs-team" ||
+      input.scale === "school-vs-school" ||
+      input.scale === "district-vs-district"
         ? input.scale
         : "student-vs-student",
     status:
@@ -257,9 +281,14 @@ function normalizeRoom(input: Partial<BattleRoom> & Pick<BattleRoom, "id">): Bat
     updatedAt: asNumber(input.updatedAt, Date.now()),
     winnerId: input.winnerId ?? null,
     winnerLabel: input.winnerLabel ?? null,
-    debateTopic: asString(input.debateTopic, "Education should be guided more by competition than pressure."),
+    debateTopic: asString(
+      input.debateTopic,
+      "Education should be guided more by competition than pressure.",
+    ),
     debateSideAssignment:
-      input.debateSideAssignment && typeof input.debateSideAssignment === "object" ? (input.debateSideAssignment as Record<string, BattleSide>) : {},
+      input.debateSideAssignment && typeof input.debateSideAssignment === "object"
+        ? (input.debateSideAssignment as Record<string, BattleSide>)
+        : {},
     participantIds: asArray(input.participantIds),
   };
 }
@@ -293,19 +322,45 @@ function normalizeLive(input: Partial<BattleLiveState> = {}): BattleLiveState {
   };
 }
 
-export function buildBattleDeck(seedText: string, format: BattleFormat, scale: BattleScale): BattleRoundPlan[] {
+export function buildBattleDeck(
+  seedText: string,
+  format: BattleFormat,
+  scale: BattleScale,
+): BattleRoundPlan[] {
   const pool = buildQuestionPool(format, scale);
   const rounds = [
-    { id: "round-1", label: "General Knowledge", description: "National knowledge and current affairs", duration: 75 },
-    { id: "round-2", label: "Science", description: "Core science reasoning and quick recall", duration: 75 },
-    { id: "round-3", label: "Mathematics", description: "Competitive arithmetic and logic", duration: 75 },
-    { id: "round-4", label: "ICT", description: "Digital literacy and tech awareness", duration: 75 },
+    {
+      id: "round-1",
+      label: "General Knowledge",
+      description: "National knowledge and current affairs",
+      duration: 75,
+    },
+    {
+      id: "round-2",
+      label: "Science",
+      description: "Core science reasoning and quick recall",
+      duration: 75,
+    },
+    {
+      id: "round-3",
+      label: "Mathematics",
+      description: "Competitive arithmetic and logic",
+      duration: 75,
+    },
+    {
+      id: "round-4",
+      label: "ICT",
+      description: "Digital literacy and tech awareness",
+      duration: 75,
+    },
     { id: "round-5", label: "Rapid Fire", description: "Fast-paced mixed questions", duration: 45 },
   ] satisfies Array<Omit<BattleRoundPlan, "questions">>;
 
   return rounds.map((round, roundIndex) => {
     const questions = shuffle(
-      pool.filter((question) => question.roundLabel === round.label || round.label === "Rapid Fire"),
+      pool.filter(
+        (question) => question.roundLabel === round.label || round.label === "Rapid Fire",
+      ),
       `${seedText}:${round.id}:${roundIndex}`,
     ).slice(0, 5);
     return { ...round, questions };
@@ -314,7 +369,12 @@ export function buildBattleDeck(seedText: string, format: BattleFormat, scale: B
 
 function buildQuestionPool(format: BattleFormat, scale: BattleScale): BattleQuestion[] {
   const baseTime = format === "debate" ? 60 : 30;
-  const schoolFocus = scale === "district-vs-district" ? "district" : scale === "school-vs-school" ? "school" : "student";
+  const schoolFocus =
+    scale === "district-vs-district"
+      ? "district"
+      : scale === "school-vs-school"
+        ? "school"
+        : "student";
   const questions: BattleQuestion[] = [
     {
       id: "gk-1",
@@ -460,7 +520,23 @@ async function writeBattleRoomLocal(room: BattleRoom) {
   return room;
 }
 
-export async function createBattleRoom(input: Omit<BattleRoom, "id" | "code" | "createdAt" | "updatedAt" | "status" | "currentRoundIndex" | "currentQuestionIndex" | "countdownEndsAt" | "roundEndsAt" | "winnerId" | "winnerLabel" | "participantIds">) {
+export async function createBattleRoom(
+  input: Omit<
+    BattleRoom,
+    | "id"
+    | "code"
+    | "createdAt"
+    | "updatedAt"
+    | "status"
+    | "currentRoundIndex"
+    | "currentQuestionIndex"
+    | "countdownEndsAt"
+    | "roundEndsAt"
+    | "winnerId"
+    | "winnerLabel"
+    | "participantIds"
+  >,
+) {
   const room: BattleRoom = normalizeRoom({
     id: randomId("room"),
     code: makeBattleCode(),
@@ -493,7 +569,9 @@ export async function createBattleRoom(input: Omit<BattleRoom, "id" | "code" | "
 export async function patchBattleRoom(roomId: string, patch: Partial<BattleRoom>) {
   if (!firebaseEnabled) {
     const rooms = readLocalValue<BattleRoom[]>("rooms", []);
-    const next = rooms.map((room) => (room.id === roomId ? normalizeRoom({ ...room, ...patch }) : room));
+    const next = rooms.map((room) =>
+      room.id === roomId ? normalizeRoom({ ...room, ...patch }) : room,
+    );
     writeLocalValue("rooms", next);
     return next.find((room) => room.id === roomId) ?? null;
   }
@@ -543,7 +621,11 @@ export async function startBattleCountdown(roomId: string, seconds = 10) {
   const countdownEndsAt = Date.now() + seconds * 1000;
   if (!firebaseEnabled) {
     const rooms = readLocalValue<BattleRoom[]>("rooms", []);
-    const next = rooms.map((room) => (room.id === roomId ? normalizeRoom({ ...room, status: "countdown", countdownEndsAt, updatedAt: Date.now() }) : room));
+    const next = rooms.map((room) =>
+      room.id === roomId
+        ? normalizeRoom({ ...room, status: "countdown", countdownEndsAt, updatedAt: Date.now() })
+        : room,
+    );
     writeLocalValue("rooms", next);
     return;
   }
@@ -551,8 +633,15 @@ export async function startBattleCountdown(roomId: string, seconds = 10) {
   const db = getFirebaseDb();
   const rtdb = getFirebaseRtdb();
   if (!db || !rtdb) return;
-  await updateDoc(doc(db, "battleRooms", roomId), { status: "countdown", countdownEndsAt, updatedAt: Date.now() });
-  await update(ref(rtdb, `battleRooms/${roomId}/live`), normalizeLive({ status: "countdown", countdownEndsAt }));
+  await updateDoc(doc(db, "battleRooms", roomId), {
+    status: "countdown",
+    countdownEndsAt,
+    updatedAt: Date.now(),
+  });
+  await update(
+    ref(rtdb, `battleRooms/${roomId}/live`),
+    normalizeLive({ status: "countdown", countdownEndsAt }),
+  );
 }
 
 export async function startBattleRound(roomId: string, roundIndex: number, questionIndex = 0) {
@@ -560,7 +649,16 @@ export async function startBattleRound(roomId: string, roundIndex: number, quest
   if (!firebaseEnabled) {
     const rooms = readLocalValue<BattleRoom[]>("rooms", []);
     const next = rooms.map((room) =>
-      room.id === roomId ? normalizeRoom({ ...room, status: "live", currentRoundIndex: roundIndex, currentQuestionIndex: questionIndex, roundEndsAt, updatedAt: Date.now() }) : room,
+      room.id === roomId
+        ? normalizeRoom({
+            ...room,
+            status: "live",
+            currentRoundIndex: roundIndex,
+            currentQuestionIndex: questionIndex,
+            roundEndsAt,
+            updatedAt: Date.now(),
+          })
+        : room,
     );
     writeLocalValue("rooms", next);
     return;
@@ -576,13 +674,30 @@ export async function startBattleRound(roomId: string, roundIndex: number, quest
     roundEndsAt,
     updatedAt: Date.now(),
   });
-  await update(ref(rtdb, `battleRooms/${roomId}/live`), normalizeLive({ status: "live", roundIndex, questionIndex, roundEndsAt }));
+  await update(
+    ref(rtdb, `battleRooms/${roomId}/live`),
+    normalizeLive({ status: "live", roundIndex, questionIndex, roundEndsAt }),
+  );
 }
 
-export async function finishBattleRoom(roomId: string, winnerId: string | null, winnerLabel: string | null) {
+export async function finishBattleRoom(
+  roomId: string,
+  winnerId: string | null,
+  winnerLabel: string | null,
+) {
   if (!firebaseEnabled) {
     const rooms = readLocalValue<BattleRoom[]>("rooms", []);
-    const next = rooms.map((room) => (room.id === roomId ? normalizeRoom({ ...room, status: "finished", winnerId, winnerLabel, updatedAt: Date.now() }) : room));
+    const next = rooms.map((room) =>
+      room.id === roomId
+        ? normalizeRoom({
+            ...room,
+            status: "finished",
+            winnerId,
+            winnerLabel,
+            updatedAt: Date.now(),
+          })
+        : room,
+    );
     writeLocalValue("rooms", next);
     return;
   }
@@ -590,23 +705,47 @@ export async function finishBattleRoom(roomId: string, winnerId: string | null, 
   const db = getFirebaseDb();
   const rtdb = getFirebaseRtdb();
   if (!db || !rtdb) return;
-  await updateDoc(doc(db, "battleRooms", roomId), { status: "finished", winnerId, winnerLabel, updatedAt: Date.now() });
-  await update(ref(rtdb, `battleRooms/${roomId}/live`), normalizeLive({ status: "finished", winnerId }));
+  await updateDoc(doc(db, "battleRooms", roomId), {
+    status: "finished",
+    winnerId,
+    winnerLabel,
+    updatedAt: Date.now(),
+  });
+  await update(
+    ref(rtdb, `battleRooms/${roomId}/live`),
+    normalizeLive({ status: "finished", winnerId }),
+  );
 }
 
-export function listenBattleRooms(onChange: (rooms: BattleRoom[]) => void): Unsubscribe | (() => void) {
+export function listenBattleRooms(
+  onChange: (rooms: BattleRoom[]) => void,
+): Unsubscribe | (() => void) {
   if (!firebaseEnabled) {
-    return subscribeLocalValue("rooms", () => readLocalValue<BattleRoom[]>("rooms", []).map((room) => normalizeRoom(room)), onChange);
+    return subscribeLocalValue(
+      "rooms",
+      () => readLocalValue<BattleRoom[]>("rooms", []).map((room) => normalizeRoom(room)),
+      onChange,
+    );
   }
 
   const db = getFirebaseDb();
   if (!db) return () => {};
-  return onSnapshot(query(collection(db, "battleRooms"), orderBy("createdAt", "desc"), limit(24)), (snapshot) => {
-    onChange(snapshot.docs.map((entry) => normalizeRoom({ id: entry.id, ...(entry.data() as Partial<BattleRoom>) })));
-  });
+  return onSnapshot(
+    query(collection(db, "battleRooms"), orderBy("createdAt", "desc"), limit(24)),
+    (snapshot) => {
+      onChange(
+        snapshot.docs.map((entry) =>
+          normalizeRoom({ id: entry.id, ...(entry.data() as Partial<BattleRoom>) }),
+        ),
+      );
+    },
+  );
 }
 
-export function listenBattleRoom(roomId: string, onChange: (room: BattleRoom | null) => void): Unsubscribe | (() => void) {
+export function listenBattleRoom(
+  roomId: string,
+  onChange: (room: BattleRoom | null) => void,
+): Unsubscribe | (() => void) {
   if (!firebaseEnabled) {
     return subscribeLocalValue(
       `room:${roomId}`,
@@ -626,7 +765,10 @@ export function listenBattleRoom(roomId: string, onChange: (room: BattleRoom | n
   });
 }
 
-export function listenBattleLive(roomId: string, onChange: (state: BattleLiveState) => void): Unsubscribe | (() => void) {
+export function listenBattleLive(
+  roomId: string,
+  onChange: (state: BattleLiveState) => void,
+): Unsubscribe | (() => void) {
   if (!firebaseEnabled) {
     return subscribeLocalValue(
       `live:${roomId}`,
@@ -674,14 +816,22 @@ export async function incrementBattleScore(roomId: string, participantId: string
   const rtdb = getFirebaseRtdb();
   if (!rtdb) return null;
   const scoreRef = ref(rtdb, `battleRooms/${roomId}/live/scores/${participantId}`);
-  await runTransaction(scoreRef, (current) => (typeof current === "number" ? current + amount : amount));
+  await runTransaction(scoreRef, (current) =>
+    typeof current === "number" ? current + amount : amount,
+  );
   return null;
 }
 
-export async function appendBattleChat(roomId: string, message: Omit<BattleChatMessage, "id" | "createdAt">) {
+export async function appendBattleChat(
+  roomId: string,
+  message: Omit<BattleChatMessage, "id" | "createdAt">,
+) {
   if (!firebaseEnabled) {
     const messages = readLocalValue<BattleChatMessage[]>(`chat:${roomId}`, []);
-    const next = [{ ...message, id: randomId("chat"), createdAt: Date.now() }, ...messages].slice(0, 100);
+    const next = [{ ...message, id: randomId("chat"), createdAt: Date.now() }, ...messages].slice(
+      0,
+      100,
+    );
     writeLocalValue(`chat:${roomId}`, next);
     return;
   }
@@ -695,32 +845,48 @@ export async function appendBattleChat(roomId: string, message: Omit<BattleChatM
   });
 }
 
-export function listenBattleChat(roomId: string, onChange: (messages: BattleChatMessage[]) => void): Unsubscribe | (() => void) {
+export function listenBattleChat(
+  roomId: string,
+  onChange: (messages: BattleChatMessage[]) => void,
+): Unsubscribe | (() => void) {
   if (!firebaseEnabled) {
-    return subscribeLocalValue(`chat:${roomId}`, () => readLocalValue<BattleChatMessage[]>(`chat:${roomId}`, []), onChange);
+    return subscribeLocalValue(
+      `chat:${roomId}`,
+      () => readLocalValue<BattleChatMessage[]>(`chat:${roomId}`, []),
+      onChange,
+    );
   }
 
   const db = getFirebaseDb();
   if (!db) return () => {};
-  return onSnapshot(query(collection(db, "battleRooms", roomId, "chat"), orderBy("createdAt", "asc"), limit(80)), (snapshot) => {
-    onChange(
-      snapshot.docs.map((entry) => ({
-        id: entry.id,
-        senderId: asString(entry.data().senderId, ""),
-        senderName: asString(entry.data().senderName, "Spectator"),
-        senderAvatar: asString(entry.data().senderAvatar, "💬"),
-        text: asString(entry.data().text, ""),
-        createdAt: asNumber(entry.data().createdAt, Date.now()),
-        role: (entry.data().role as BattleRole) ?? "spectator",
-      })),
-    );
-  });
+  return onSnapshot(
+    query(collection(db, "battleRooms", roomId, "chat"), orderBy("createdAt", "asc"), limit(80)),
+    (snapshot) => {
+      onChange(
+        snapshot.docs.map((entry) => ({
+          id: entry.id,
+          senderId: asString(entry.data().senderId, ""),
+          senderName: asString(entry.data().senderName, "Spectator"),
+          senderAvatar: asString(entry.data().senderAvatar, "💬"),
+          text: asString(entry.data().text, ""),
+          createdAt: asNumber(entry.data().createdAt, Date.now()),
+          role: (entry.data().role as BattleRole) ?? "spectator",
+        })),
+      );
+    },
+  );
 }
 
-export async function appendBattleSignal(roomId: string, signal: Omit<BattleSignal, "id" | "createdAt">) {
+export async function appendBattleSignal(
+  roomId: string,
+  signal: Omit<BattleSignal, "id" | "createdAt">,
+) {
   if (!firebaseEnabled) {
     const signals = readLocalValue<BattleSignal[]>(`signals:${roomId}`, []);
-    const next = [{ ...signal, id: randomId("signal"), createdAt: Date.now() }, ...signals].slice(0, 50);
+    const next = [{ ...signal, id: randomId("signal"), createdAt: Date.now() }, ...signals].slice(
+      0,
+      50,
+    );
     writeLocalValue(`signals:${roomId}`, next);
     return;
   }
@@ -733,30 +899,46 @@ export async function appendBattleSignal(roomId: string, signal: Omit<BattleSign
   });
 }
 
-export function listenBattleSignals(roomId: string, onChange: (signals: BattleSignal[]) => void): Unsubscribe | (() => void) {
+export function listenBattleSignals(
+  roomId: string,
+  onChange: (signals: BattleSignal[]) => void,
+): Unsubscribe | (() => void) {
   if (!firebaseEnabled) {
-    return subscribeLocalValue(`signals:${roomId}`, () => readLocalValue<BattleSignal[]>(`signals:${roomId}`, []), onChange);
+    return subscribeLocalValue(
+      `signals:${roomId}`,
+      () => readLocalValue<BattleSignal[]>(`signals:${roomId}`, []),
+      onChange,
+    );
   }
 
   const db = getFirebaseDb();
   if (!db) return () => {};
-  return onSnapshot(query(collection(db, "battleRooms", roomId, "signals"), orderBy("createdAt", "asc"), limit(80)), (snapshot) => {
-    onChange(
-      snapshot.docs.map((entry) => ({
-        id: entry.id,
-        kind: (entry.data().kind as BattleSignal["kind"]) ?? "ready",
-        senderId: asString(entry.data().senderId, ""),
-        createdAt: asNumber(entry.data().createdAt, Date.now()),
-        payload: (entry.data().payload as Record<string, unknown>) ?? {},
-      })),
-    );
-  });
+  return onSnapshot(
+    query(collection(db, "battleRooms", roomId, "signals"), orderBy("createdAt", "asc"), limit(80)),
+    (snapshot) => {
+      onChange(
+        snapshot.docs.map((entry) => ({
+          id: entry.id,
+          kind: (entry.data().kind as BattleSignal["kind"]) ?? "ready",
+          senderId: asString(entry.data().senderId, ""),
+          createdAt: asNumber(entry.data().createdAt, Date.now()),
+          payload: (entry.data().payload as Record<string, unknown>) ?? {},
+        })),
+      );
+    },
+  );
 }
 
-export async function appendBattleAntiCheat(roomId: string, event: Omit<BattleAntiCheatEvent, "id" | "createdAt">) {
+export async function appendBattleAntiCheat(
+  roomId: string,
+  event: Omit<BattleAntiCheatEvent, "id" | "createdAt">,
+) {
   if (!firebaseEnabled) {
     const events = readLocalValue<BattleAntiCheatEvent[]>(`cheat:${roomId}`, []);
-    const next = [{ ...event, id: randomId("flag"), createdAt: Date.now() }, ...events].slice(0, 100);
+    const next = [{ ...event, id: randomId("flag"), createdAt: Date.now() }, ...events].slice(
+      0,
+      100,
+    );
     writeLocalValue(`cheat:${roomId}`, next);
     return;
   }
@@ -769,27 +951,45 @@ export async function appendBattleAntiCheat(roomId: string, event: Omit<BattleAn
   });
 }
 
-export function listenBattleAntiCheat(roomId: string, onChange: (events: BattleAntiCheatEvent[]) => void): Unsubscribe | (() => void) {
+export function listenBattleAntiCheat(
+  roomId: string,
+  onChange: (events: BattleAntiCheatEvent[]) => void,
+): Unsubscribe | (() => void) {
   if (!firebaseEnabled) {
-    return subscribeLocalValue(`cheat:${roomId}`, () => readLocalValue<BattleAntiCheatEvent[]>(`cheat:${roomId}`, []), onChange);
+    return subscribeLocalValue(
+      `cheat:${roomId}`,
+      () => readLocalValue<BattleAntiCheatEvent[]>(`cheat:${roomId}`, []),
+      onChange,
+    );
   }
 
   const db = getFirebaseDb();
   if (!db) return () => {};
-  return onSnapshot(query(collection(db, "battleRooms", roomId, "antiCheat"), orderBy("createdAt", "desc"), limit(80)), (snapshot) => {
-    onChange(
-      snapshot.docs.map((entry) => ({
-        id: entry.id,
-        type: (entry.data().type as BattleAntiCheatEvent["type"]) ?? "visibility",
-        severity: (entry.data().severity as BattleAntiCheatEvent["severity"]) ?? "info",
-        message: asString(entry.data().message, ""),
-        createdAt: asNumber(entry.data().createdAt, Date.now()),
-      })),
-    );
-  });
+  return onSnapshot(
+    query(
+      collection(db, "battleRooms", roomId, "antiCheat"),
+      orderBy("createdAt", "desc"),
+      limit(80),
+    ),
+    (snapshot) => {
+      onChange(
+        snapshot.docs.map((entry) => ({
+          id: entry.id,
+          type: (entry.data().type as BattleAntiCheatEvent["type"]) ?? "visibility",
+          severity: (entry.data().severity as BattleAntiCheatEvent["severity"]) ?? "info",
+          message: asString(entry.data().message, ""),
+          createdAt: asNumber(entry.data().createdAt, Date.now()),
+        })),
+      );
+    },
+  );
 }
 
-export async function updateBattleAudience(roomId: string, audienceCount: number, spectatorCount: number) {
+export async function updateBattleAudience(
+  roomId: string,
+  audienceCount: number,
+  spectatorCount: number,
+) {
   if (!firebaseEnabled) {
     const current = readLocalValue<BattleLiveState>(`live:${roomId}`, normalizeLive());
     const next = normalizeLive({ ...current, audienceCount, spectatorCount });
@@ -804,10 +1004,25 @@ export async function updateBattleAudience(roomId: string, audienceCount: number
 
 export function getTopBattleSchools() {
   const schoolRows = [
-    { name: "Dhaka Residential Model College", district: "Dhaka", points: 9810, badge: "Diamond School" },
-    { name: "Chittagong Collegiate School", district: "Chattogram", points: 9425, badge: "Platinum School" },
-    { name: "BCSIR School & College", district: "Dhaka", points: 9180, badge: "Gold School" },
-    { name: "Rangpur Cantonment Public School", district: "Rangpur", points: 8895, badge: "Silver School" },
+    {
+      name: "Kachua Govt. Pilot High School",
+      district: "Chandpur",
+      points: 9810,
+      badge: "Diamond School",
+    },
+    {
+      name: "Chandpur Hasan Ali Govt. Boys School",
+      district: "Chandpur",
+      points: 9425,
+      badge: "Platinum School",
+    },
+    { name: "Matripith Ucchya Biddyaloy", district: "Cumilla", points: 9180, badge: "Gold School" },
+    {
+      name: "Haziganj Govt. Pilot School",
+      district: "Chandpur",
+      points: 8895,
+      badge: "Silver School",
+    },
   ];
 
   return schoolRows;
@@ -815,18 +1030,49 @@ export function getTopBattleSchools() {
 
 export function getTopBattleStudents() {
   return [
-    { name: "Fahim Hasan", school: "Dhaka Residential Model College", rating: 1785, nationalRank: 45, districtRank: 2, schoolRank: 1 },
-    { name: "Nafisa Rahman", school: "BCSIR School & College", rating: 1742, nationalRank: 62, districtRank: 5, schoolRank: 1 },
-    { name: "Sabbir Hossain", school: "BCSIR School & College", rating: 1698, nationalRank: 84, districtRank: 7, schoolRank: 2 },
-    { name: "Mim Akter", school: "Rangpur Cantonment Public School", rating: 1653, nationalRank: 106, districtRank: 1, schoolRank: 1 },
+    {
+      name: "Fahim Hasan",
+      school: "Kachua Govt. Pilot High School",
+      rating: 1785,
+      nationalRank: 45,
+      districtRank: 2,
+      schoolRank: 1,
+    },
+    {
+      name: "Nafisa Rahman",
+      school: "Kachua Govt. Pilot High School",
+      rating: 1742,
+      nationalRank: 62,
+      districtRank: 5,
+      schoolRank: 1,
+    },
+    {
+      name: "Sabbir Hossain",
+      school: "Kachua Govt. Pilot High School",
+      rating: 1698,
+      nationalRank: 84,
+      districtRank: 7,
+      schoolRank: 2,
+    },
+    {
+      name: "Mim Akter",
+      school: "Matripith Ucchya Biddyaloy",
+      rating: 1653,
+      nationalRank: 106,
+      districtRank: 1,
+      schoolRank: 1,
+    },
   ];
 }
 
-export function getLatestBattleDeckPreview(format: BattleFormat, scale: BattleScale, seedText = "preview") {
+export function getLatestBattleDeckPreview(
+  format: BattleFormat,
+  scale: BattleScale,
+  seedText = "preview",
+) {
   return buildBattleDeck(seedText, format, scale);
 }
 
 export function isBattleFirebaseReady() {
   return firebaseEnabled;
 }
-
