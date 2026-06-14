@@ -125,12 +125,17 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const [showIntro, setShowIntro] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const seen = typeof window !== "undefined" && sessionStorage.getItem("bani:intro-seen");
-    if (!seen) {
-      setShowIntro(true);
+    if (seen) {
+      setShowIntro(false);
+      return;
+    }
+
+    setShowIntro(true);
+    if (typeof window !== "undefined") {
       const timer = window.setTimeout(() => {
         setShowIntro(false);
         sessionStorage.setItem("bani:intro-seen", "1");
@@ -170,6 +175,8 @@ function IntroSplash() {
               src="/assets/intro-team.jpg"
               alt="E-পাঠশালা টিম"
               className="absolute inset-0 h-full w-full object-cover object-center"
+              loading="eager"
+              fetchPriority="high"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08)_0%,rgba(2,6,23,0.28)_55%,rgba(2,6,23,0.78)_100%)]" />
             <div className="absolute inset-x-0 bottom-0 p-5 md:p-8 text-white">
